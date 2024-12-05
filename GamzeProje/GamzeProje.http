@@ -1,0 +1,6 @@
+@GamzeProje_HostAddress = http://localhost:5098
+
+GET {{GamzeProje_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
