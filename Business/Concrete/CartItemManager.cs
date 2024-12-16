@@ -1,4 +1,6 @@
-﻿using Business.Abstract;
+﻿
+using Business.Abstract;
+using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -10,44 +12,52 @@ namespace Business.Concrete
 {
     public class CartItemManager : ICartItemService
     {
+        ICartItemDal _cItemDal;
+
+        public CartItemManager(ICartItemDal cItemDal)
+        {
+            _cItemDal = cItemDal;
+        }
+
         public void Add(CartItem cart)
         {
-            throw new NotImplementedException();
+            _cItemDal.Add(cart);
         }
 
         public void Delete(CartItem cart)
         {
-            throw new NotImplementedException();
+            _cItemDal.Delete(cart);
         }
 
         public List<CartItem> GetAll()
         {
-            throw new NotImplementedException();
+            return _cItemDal.GetAll();
         }
 
         public CartItem GetByCartAndProduct(int cartId, int productId)
         {
-            throw new NotImplementedException();
+            return _cItemDal.Get(a => a.CartId == cartId && a.ProductId == productId);
         }
 
         public List<CartItem> GetByCartId(int cartId)
         {
-            throw new NotImplementedException();
+            return _cItemDal.GetAll(a => a.CartId == cartId);
         }
 
         public CartItem GetById(int id)
         {
-            throw new NotImplementedException();
+            return _cItemDal.Get(a => a.CartItemId == id);
+
         }
 
         public List<CartItem> GetByProductId(int productId)
         {
-            throw new NotImplementedException();
+            return _cItemDal.GetAll(a => a.ProductId == productId);
         }
 
         public void Update(CartItem cart)
         {
-            throw new NotImplementedException();
+            _cItemDal.Update(cart);
         }
     }
 }

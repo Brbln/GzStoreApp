@@ -14,8 +14,6 @@ namespace Business.Abstract
         public void Delete(Category cat);
         List<Category> GetAll();
         Category GetById(int id);
-        List<Category> GetAllCategories();
-        Category GetByCategoryId(int categoryId);
-        Category GetByCategoryName(string categoryName);
+        List<Category> GetByCategoryName(string catName);
     }
 }

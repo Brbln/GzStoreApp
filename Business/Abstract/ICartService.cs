@@ -14,7 +14,6 @@ namespace Business.Abstract
         public void Delete(Cart cart);
         public List<Cart> GetAll();
         Cart GetById(int id);
-        Cart GetByUserId(int userId);
-        Cart GetByCartId(int cartId);
+        Cart GetByUserId(int userId); 
     }
 }

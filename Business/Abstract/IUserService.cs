@@ -13,9 +13,8 @@ namespace Business.Abstract
         public void Update(User user);
         public void Delete(User user);
         List<User> GetAll();
-        User GetById(int id); 
-        User GetByUserId(int userId);         
-        User GetByEmail(string email);
+        User GetById(int id);
+        List<User> GetByEmail(string email);
         User GetByUserName(string userName);
     }
 }

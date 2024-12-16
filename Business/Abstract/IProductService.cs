@@ -16,7 +16,7 @@ namespace Business.Abstract
         Product GetById(int id);
         List<Product> GetCatById(int id);
         List<Product> GetByProductName(string name);
-        List<Product> GetByStock(int minStock, int maxStock);
+        List<Product> GetByStock(int minStock);
         List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice);
         void UpdateImages(int productId, List<string> images);
     }
