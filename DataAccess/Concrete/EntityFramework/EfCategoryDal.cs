@@ -1,0 +1,23 @@
+﻿using DataAccess.Abstract;
+using Entities.Concrete;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DataAccess.Concrete.EntityFramework
+{
+    public class EfCategoryDal : EfRepositoryBase<Category, GamzeDbConcext>, ICategoryDal
+    {
+        public List<Category> GetAllCategories()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Category GetByCategoryName(string categoryName)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
