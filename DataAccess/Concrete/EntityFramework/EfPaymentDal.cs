@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfPaymentDal : EfRepositoryBase<Payment, GamzeDbConcext>, IPaymentDal
+    public class EfPaymentDal : EfRepositoryBase<Payment, GamzeDbContext>, IPaymentDal
     {
         public List<Payment> GetByDateRange(DateTime startDate, DateTime endDate)
         {

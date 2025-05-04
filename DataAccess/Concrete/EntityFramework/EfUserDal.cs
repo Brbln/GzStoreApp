@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfUserDal : EfRepositoryBase<User, GamzeDbConcext>, IUserDal
+    public class EfUserDal : EfRepositoryBase<User, GamzeDbContext>, IUserDal
     {
         public User GetByEmail(string email)
         {

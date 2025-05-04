@@ -8,11 +8,23 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class GamzeDbConcext :DbContext
+    public class GamzeDbContext :DbContext
     {
+        public GamzeDbContext() : base()
+        {
+        }
+
+        public GamzeDbContext(DbContextOptions<GamzeDbContext> options)
+            : base(options)
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=GamzeDb;Trusted_Connection=true");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=GamzeDb;Trusted_Connection=true");
+            }
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Seller> Sellers { get; set; }

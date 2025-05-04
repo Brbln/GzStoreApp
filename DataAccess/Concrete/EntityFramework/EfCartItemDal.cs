@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfCartItemDal : EfRepositoryBase<CartItem, GamzeDbConcext>, ICartItemDal
+    public class EfCartItemDal : EfRepositoryBase<CartItem, GamzeDbContext>, ICartItemDal
     {
         public CartItem GetByCartAndProduct(int cartId, int productId)
         {

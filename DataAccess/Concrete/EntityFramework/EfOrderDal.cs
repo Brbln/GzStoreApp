@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfOrderDal : EfRepositoryBase<Order, GamzeDbConcext>, IOrderDal
+    public class EfOrderDal : EfRepositoryBase<Order, GamzeDbContext>, IOrderDal
     {
     }
 }

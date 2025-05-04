@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfProductDal : EfRepositoryBase<Product, GamzeDbConcext>, IProductDal
+    public class EfProductDal : EfRepositoryBase<Product, GamzeDbContext>, IProductDal
     {
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
         {
@@ -17,12 +17,24 @@ namespace DataAccess.Concrete.EntityFramework
 
         public List<Product> GetByProductName(string name)
         {
-            throw new NotImplementedException();
+            using (var context = new GamzeDbContext())
+            {
+                var pName = context.Products
+                    .Where(i=> i.PName.ToLower().Contains(name.ToLower()))
+                    .ToList();
+                return pName;
+            } 
         }
 
         public List<Product> GetByStock(int minStock)
         {
-            throw new NotImplementedException();
+            using (var context = new GamzeDbContext())
+            {
+                var pStock = context.Products
+                    .Where(i=> i.PStock >= minStock).ToList();
+                return pStock;
+
+            }
         }
 
         public List<Product> GetCatById(int id)

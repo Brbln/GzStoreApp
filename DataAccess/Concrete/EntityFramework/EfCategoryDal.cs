@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfCategoryDal : EfRepositoryBase<Category, GamzeDbConcext>, ICategoryDal
+    public class EfCategoryDal : EfRepositoryBase<Category, GamzeDbContext>, ICategoryDal
     {
         public List<Category> GetAllCategories()
         {
