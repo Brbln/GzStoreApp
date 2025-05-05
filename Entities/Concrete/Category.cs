@@ -11,5 +11,6 @@ namespace Entities.Concrete
     {
         public int CategoryId { get; set; }
         public string CName { get; set; }
+        public ICollection<Product> Products { get; set; }
     }
 }

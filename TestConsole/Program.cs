@@ -20,7 +20,7 @@ else
     Console.WriteLine("Ürün bulunamadı.");
 }
 Console.Write("Min stok belirtiniz: ");
-int stock=int.Parse(Console.ReadLine());
+int stock = int.Parse(Console.ReadLine());
 List<Product> products2 = productDal.GetByStock(stock);
 if (products2 != null && products2.Count > 0)
 {
@@ -32,5 +32,11 @@ if (products2 != null && products2.Count > 0)
 else
 {
     Console.WriteLine("yetersiz stok");
+}
+var prd=productDal.GetCatById(1);
+
+foreach (var product in prd)
+{
+    Console.WriteLine($"Ürün: {product.PName}, Kategori: {product.Category.CName}");
 }
 Console.ReadLine();

@@ -1,5 +1,6 @@
 ﻿using DataAccess.Abstract;
 using Entities.Concrete;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,15 @@ namespace DataAccess.Concrete.EntityFramework
 
         public List<Product> GetCatById(int id)
         {
-            throw new NotImplementedException();
+            using (var context = new GamzeDbContext())
+            {
+                var products = context.Products
+                     .Include(i => i.Category)
+                     .Where(p => p.CategoryId == id)
+                     .ToList();
+                return products;
+                
+            }
         }
 
         public void UpdateImages(int productId, List<string> images)

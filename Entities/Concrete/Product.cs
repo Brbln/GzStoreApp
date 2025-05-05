@@ -15,6 +15,7 @@ namespace Entities.Concrete
         public int PStock { get; set; }
         public decimal PPrice { get; set; }
         public int CategoryId { get; set; }
+        public Category Category { get; set; }
         public List<string>? Images { get; set; }
 
     }
