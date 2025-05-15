@@ -4,39 +4,55 @@ using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 
 EfProductDal productDal = new EfProductDal();
-Console.Write("Ürün adı giriniz: ");
-string name = Console.ReadLine();
 
-List<Product> products = productDal.GetByProductName(name);
-if (products != null && products.Count > 0)
+// Ürün adı ile arama testi
+Console.WriteLine("Ürün adı 'elma' içeren ürünler:");
+var productsByName = productDal.GetByProductName("elma");
+foreach (var product in productsByName)
 {
-    foreach (var product in products)
-    {
-        Console.WriteLine($"{product.PName} - {product.PPrice} TL");
-    }
+    Console.WriteLine($"ID: {product.ProductId}, Adı: {product.PName}, Stok: {product.PStock}");
 }
-else
-{
-    Console.WriteLine("Ürün bulunamadı.");
-}
-Console.Write("Min stok belirtiniz: ");
-int stock = int.Parse(Console.ReadLine());
-List<Product> products2 = productDal.GetByStock(stock);
-if (products2 != null && products2.Count > 0)
-{
-    foreach (var product in products2)
-    {
-        Console.WriteLine($"{product.PName} için kalan stock miktarı: {product.PStock}");
-    }
-}
-else
-{
-    Console.WriteLine("yetersiz stok");
-}
-var prd=productDal.GetCatById(1);
 
-foreach (var product in prd)
+// Stok miktarına göre arama testi
+Console.WriteLine("\nStok miktarı 10'dan fazla olan ürünler:");
+var productsByStock = productDal.GetByStock(10);
+foreach (var product in productsByStock)
 {
-    Console.WriteLine($"Ürün: {product.PName}, Kategori: {product.Category.CName}");
+    Console.WriteLine($"ID: {product.ProductId}, Adı: {product.PName}, Stok: {product.PStock}");
 }
+
+// Kategori ID'ye göre ürünler
+Console.WriteLine("\nKategori ID = 1 olan ürünler:");
+var productsByCategory = productDal.GetCatById(1);
+foreach (var product in productsByCategory)
+{
+    Console.WriteLine($"ID: {product.ProductId}, Adı: {product.PName}, Kategori: {product.Category.CName}");
+}
+
+Console.WriteLine("\nTest tamamlandı.");
 Console.ReadLine();
+
+//EfUserDal userDal = new EfUserDal();
+
+//// Test GetByEmail
+//var userByEmail = userDal.GetByEmail("a.brbln.97@gmail.com");
+//if (userByEmail != null)
+//    Console.WriteLine($"Kullanıcı bulundu: {userByEmail.UserName}");
+//else
+//    Console.WriteLine("Kullanıcı bulunamadı.");
+
+//// Test IsEmailExists
+//bool emailExists = userDal.IsEmailExists("a.brbln.97@gmail.com");
+//Console.WriteLine($"Email var mı? {emailExists}");
+
+//// Test GetByUserName
+//var userByName = userDal.GetByUserName("Asli");
+//Console.WriteLine(userByName != null
+//    ? $"Kullanıcı adı bulundu: {userByName.Email}"
+//    : "Kullanıcı adı bulunamadı.");
+
+//// Test IsUNameExists
+//bool userNameExists = userDal.IsUNameExists("ASs");
+//Console.WriteLine($"Kullanıcı adı var mı? {userNameExists}");
+
+//Console.ReadLine();

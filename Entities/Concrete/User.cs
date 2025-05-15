@@ -14,7 +14,7 @@ namespace Entities.Concrete
         public string Email { get; set; }
         public string Password { get; set; }
         public string Adress { get; set; }
-        public string PhoneNo { get; set; }
-        public int CartId { get; set; }
+        public string PhoneNo { get; set; } 
+        public Cart Cart { get; set; }
     }
 }

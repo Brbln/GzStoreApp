@@ -9,6 +9,7 @@ namespace DataAccess.Abstract
 {
     public interface IProductDal : IEntityRepository<Product>
     {
+        Product GetById(int id);
         List<Product> GetCatById(int id);
         List<Product> GetByProductName(string name);
         List<Product> GetByStock(int minStock);

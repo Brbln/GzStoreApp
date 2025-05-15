@@ -11,9 +11,19 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfProductDal : EfRepositoryBase<Product, GamzeDbContext>, IProductDal
     {
+        public Product GetById(int id)
+        {
+            return Get(u => u.ProductId == id);
+        }
+
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
         {
-            throw new NotImplementedException();
+            using (var context = new GamzeDbContext())
+            {
+                return context.Products
+                    .Where(p => p.PPrice >= minPrice && p.PPrice <= maxPrice)
+                    .ToList();
+            }
         }
 
         public List<Product> GetByProductName(string name)

@@ -9,11 +9,13 @@ namespace DataAccess.Abstract
 {
     public interface IUserDal : IEntityRepository<User>
     {
-        
+
+        User GetById(int id);
         // Kullanıcı bilgilerini e-posta ile getirir
         User GetByEmail(string email);
-
         // Kullanıcı bilgilerini kullanıcı adı ile getirir
         User GetByUserName(string userName);
+        bool IsEmailExists(string email);
+        bool IsUNameExists(string uName);
     }
 }
