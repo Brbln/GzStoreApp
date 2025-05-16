@@ -9,5 +9,7 @@ namespace DataAccess.Abstract
 {
     public interface ISellerDal:IEntityRepository<Seller>
     {
+        Seller getByEmail(string email);
+        Seller getBySName(string sName);
     }
 }

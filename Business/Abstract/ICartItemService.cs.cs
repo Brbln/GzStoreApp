@@ -9,13 +9,15 @@ namespace Business.Abstract
 {
     public interface ICartItemService
     {
-        public void Add(CartItem cart);
-        public void Update(CartItem cart);
-        public void Delete(CartItem cart);
-        public List<CartItem> GetAll();
+        void Add(CartItem cart);
+        void Update(CartItem cart);
+        void Delete(CartItem cart);
+        List<CartItem> GetAll();
         CartItem GetById(int id);
         List<CartItem> GetByCartId(int cartId);
         List<CartItem> GetByProductId(int productId);
         CartItem GetByCartAndProduct(int cartId, int productId);
+        void AddOrUpdate(CartItem cart);
+
     }
 }

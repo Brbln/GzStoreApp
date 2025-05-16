@@ -10,5 +10,20 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfSellerDal : EfRepositoryBase<Seller, GamzeDbContext>, ISellerDal
     {
+        public Seller getByEmail(string email)
+        {
+            using (var context = new GamzeDbContext())
+            {
+                return context.Sellers.FirstOrDefault(s => s.Email == email);
+            }
+        }
+
+        public Seller getBySName(string sName)
+        {
+            using (var context = new GamzeDbContext())
+            {
+                return context.Sellers.FirstOrDefault(s => s.SellerName == sName);
+            }
+        }
     }
 }
