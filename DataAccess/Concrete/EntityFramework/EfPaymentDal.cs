@@ -1,5 +1,6 @@
 ﻿using DataAccess.Abstract;
 using Entities.Concrete;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,15 @@ namespace DataAccess.Concrete.EntityFramework
 
         public List<Payment> GetByUserId(int userId)
         {
-            throw new NotImplementedException();
+            using (var context = new GamzeDbContext())
+            {
+                var payments = context.Payments
+                    .Include(p => p.Order) 
+                    .Where(p => p.Order.UserId == userId)
+                    .ToList();
+
+                return payments;
+            }
         }
     }
 }

@@ -10,14 +10,12 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfCategoryDal : EfRepositoryBase<Category, GamzeDbContext>, ICategoryDal
     {
-        public List<Category> GetAllCategories()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public Category GetByCategoryName(string categoryName)
         {
-            throw new NotImplementedException();
+            using var context = new GamzeDbContext();
+            return context.Categories.FirstOrDefault(c=> c.CName==categoryName);
+            
         }
     }
 }

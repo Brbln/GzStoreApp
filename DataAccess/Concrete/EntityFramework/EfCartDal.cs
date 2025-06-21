@@ -12,12 +12,13 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public Cart GetByCartId(int cartId)
         {
-            throw new NotImplementedException();
+            return Get(c => c.CartId == cartId);
         }
 
         public Cart GetByUserId(int userId)
         {
-            throw new NotImplementedException();
+            using var context = new GamzeDbContext();
+            return context.Carts.FirstOrDefault(c => c.UserId == userId);
         }
     }
 }

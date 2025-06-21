@@ -12,17 +12,20 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public CartItem GetByCartAndProduct(int cartId, int productId)
         {
-            throw new NotImplementedException();
+            using var context = new GamzeDbContext();
+            return context.CartItems.FirstOrDefault(c => c.CartId == cartId && c.ProductId == productId);
         }
 
         public List<CartItem> GetByCartId(int cartId)
         {
-            throw new NotImplementedException();
+            using var context = new GamzeDbContext();
+            return context.CartItems.Where(c => c.CartId == cartId).ToList();
         }
 
         public List<CartItem> GetByProductId(int productId)
         {
-            throw new NotImplementedException();
+            using var context = new GamzeDbContext();
+            return context.CartItems.Where(c => c.ProductId == productId).ToList();
         }
     }
 }
