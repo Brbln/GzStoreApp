@@ -18,6 +18,8 @@ namespace Business.Concrete
         }
         public void Add(Payment payment)
         {
+            payment.PaymentDate = DateTime.Now;
+            payment.Status = "Success";
             _paymentdal.Add(payment);
         }
 
@@ -28,34 +30,32 @@ namespace Business.Concrete
 
         public List<Payment> GetAll()
         {
-          return _paymentdal.GetAll();
+            return _paymentdal.GetAll();
         }
 
         public List<Payment> GetByDateRange(DateTime startDate, DateTime endDate)
         {
-            if (startDate == null)
-                Console.WriteLine("Başlangıç tarihini belirleyiniz!");
-            if (startDate == endDate)
-                Console.WriteLine("Başlangıç tarihi bitiş tarihiyle aynı olamaz!");
-            if(endDate==null)
-                return _paymentdal.GetAll(a => a.PaymentDate >= startDate && a.PaymentDate <= DateTime.Now);
-
+            if (startDate >= endDate)
+            {
+                Console.WriteLine("Başlangıç tarihi bitiş tarihinden önce olmalıdır.");
+                return new List<Payment>(); // boş liste dön
+            }
             return _paymentdal.GetAll(a => a.PaymentDate >= startDate && a.PaymentDate <= endDate);
         }
 
         public Payment GetById(int id)
         {
-            return _paymentdal.Get(a=>a.PaymentId == id);
+            return _paymentdal.Get(a => a.PaymentId == id);
         }
 
         public List<Payment> GetByStatus(string status)
         {
-            return _paymentdal.GetAll(a=>a.Status== status);
+            return _paymentdal.GetAll(a => a.Status == status);
         }
 
         public List<Payment> GetByUserId(int userId)
         {
-            return _paymentdal.GetAll(a => a.OrderId == userId);
+            return _paymentdal.GetAll(a => a.Order.UserId == userId);
         }
 
         public void Update(Payment payment)

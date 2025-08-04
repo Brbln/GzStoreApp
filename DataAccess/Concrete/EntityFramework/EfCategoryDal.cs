@@ -14,8 +14,7 @@ namespace DataAccess.Concrete.EntityFramework
         public Category GetByCategoryName(string categoryName)
         {
             using var context = new GamzeDbContext();
-            return context.Categories.FirstOrDefault(c=> c.CName==categoryName);
-            
+            return context.Categories.FirstOrDefault(c=> c.CName==categoryName);            
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +42,10 @@ namespace Business.Concrete
 
         public Cart GetByUserId(int userId)
         {
-            return _cartDal.Get(a => a.UserId == userId);
+            using var context = new GamzeDbContext();
+            return context.Carts
+                       .Include(c => c.User)
+                       .FirstOrDefault(c => c.UserId == userId);
         }
 
         public void Update(Cart cart)

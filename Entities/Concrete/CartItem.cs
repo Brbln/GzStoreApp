@@ -11,7 +11,6 @@ namespace Entities.Concrete
     {
         public int CartItemId { get; set; }
         public int CartId { get; set; }
-        public Cart cart { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
     }

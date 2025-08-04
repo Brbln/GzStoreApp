@@ -42,12 +42,6 @@ namespace Business.Concrete
         {
             _cItemDal.Delete(cart);
         }
-
-        public List<CartItem> GetAll()
-        {
-            return _cItemDal.GetAll();
-        }
-
         public CartItem GetByCartAndProduct(int cartId, int productId)
         {
             return _cItemDal.Get(a => a.CartId == cartId && a.ProductId == productId);
@@ -71,17 +65,17 @@ namespace Business.Concrete
 
         public void Update(CartItem cart)
         {
-            var extistingItem = _cItemDal.Get(c => c.CartItemId == cart.CartItemId);
-            if (extistingItem == null)
-                throw new Exception("Güncellenecek sepet öğesi bulunamadı.");
+            var existingItem = _cItemDal.Get(c => c.CartItemId == cart.CartItemId);
+            if (existingItem == null)
+                throw new InvalidOperationException("Sepetinizde bu ürün bulunamadığı için güncellenemedi.");
             if (cart.Quantity <= 0)
             {
-                _cItemDal.Delete(extistingItem);
+                _cItemDal.Delete(existingItem);
             }
             else
             {
-                extistingItem.Quantity = cart.Quantity;
-                _cItemDal.Update(extistingItem);
+                existingItem.Quantity = cart.Quantity;
+                _cItemDal.Update(existingItem);
             }
         }
     }
