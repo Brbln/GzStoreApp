@@ -1,8 +1,11 @@
 using Business.Abstract;
 using Business.Concrete;
+using Business.DTOs; 
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore; 
+using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +19,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GamzeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
 // DataAccess
 builder.Services.AddScoped<IProductDal, EfProductDal>();
 // Business
 builder.Services.AddScoped<IProductService, ProductManager>();
+builder.Services.AddAutoMapper(cfg => {
+    cfg.AddProfile<MappingProfile>();
+});
+builder.Services.AddScoped<ICartItemService, CartItemManager>();
+
 
 var app = builder.Build();
 

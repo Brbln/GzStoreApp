@@ -1,5 +1,7 @@
 ﻿
+using AutoMapper;
 using Business.Abstract;
+using Business.DTOs;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -12,11 +14,13 @@ namespace Business.Concrete
 {
     public class CartItemManager : ICartItemService
     {
-        ICartItemDal _cItemDal;
+        private readonly ICartItemDal _cItemDal;
+        private readonly IMapper _mapper;
 
-        public CartItemManager(ICartItemDal cItemDal)
+        public CartItemManager(ICartItemDal cItemDal, IMapper mapper)
         {
             _cItemDal = cItemDal;
+            _mapper = mapper;
         }
 
         public void Add(CartItem cart)
@@ -30,11 +34,16 @@ namespace Business.Concrete
             if (existing != null)
             {
                 existing.Quantity += cart.Quantity;
-                _cItemDal.Update(existing);
+
+                if (existing.Quantity <= 0)
+                    _cItemDal.Delete(existing);
+                else
+                    _cItemDal.Update(existing);
             }
             else
             {
-                _cItemDal.Add(cart);
+                if (cart.Quantity > 0)
+                    _cItemDal.Add(cart);
             }
         }
 
@@ -78,5 +87,13 @@ namespace Business.Concrete
                 _cItemDal.Update(existingItem);
             }
         }
+
+        public List<CartItemDto> GetCartItemsDto(int cartId)
+        {
+            var cartItems = _cItemDal.GetAll(ci => ci.CartId == cartId).ToList();
+            var cartItemsDto = _mapper.Map<List<CartItemDto>>(cartItems);
+            return cartItemsDto;
+        }
+
     }
 }

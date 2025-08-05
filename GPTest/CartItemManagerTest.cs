@@ -20,7 +20,7 @@ namespace GPTest
             // Assert
             mockDal.Verify(d => d.Add(item), Times.Once);
 
-            //deneme
+         
         }
     }
 }

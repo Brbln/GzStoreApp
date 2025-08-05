@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Business.DTOs;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace Business.Abstract
         List<CartItem> GetByProductId(int productId);
         CartItem GetByCartAndProduct(int cartId, int productId);
         void AddOrUpdate(CartItem cart);
+        List<CartItemDto> GetCartItemsDto(int cartId);
 
     }
 }
