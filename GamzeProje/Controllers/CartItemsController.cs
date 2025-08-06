@@ -1,4 +1,7 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
+using Business.DTOs;
+using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +12,12 @@ namespace GamzeProje.Controllers
     public class CartItemsController : ControllerBase
     {
         private readonly ICartItemService _cartItemService;
+        private readonly IMapper _mapper;
 
-        public CartItemsController(ICartItemService cartItemService)
+        public CartItemsController(ICartItemService cartItemService, IMapper mapper)
         {
             _cartItemService = cartItemService;
+            _mapper = mapper;
         }
 
         [HttpGet("{cartId}")]
@@ -23,6 +28,16 @@ namespace GamzeProje.Controllers
                 return NotFound();
 
             return Ok(itemsDto);
+        }
+        [HttpPost]
+        public IActionResult Add(CartItemDto cartItemDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var cartItem = _mapper.Map<CartItem>(cartItemDto);
+            _cartItemService.Add(cartItem);
+            return Ok("Sepete ürün başarıyla eklendi.");
         }
     }
 }

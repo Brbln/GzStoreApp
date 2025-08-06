@@ -12,7 +12,8 @@ namespace Entities.Concrete
         public int Id { get; set; }   
         public int ProductId { get; set; }      
         public string ImageUrl { get; set; }     
-        public DateTime CreatedDate { get; set; }           
+        public DateTime CreatedDate { get; set; }     
+        
         public Product Product { get; set; }
     }
 }

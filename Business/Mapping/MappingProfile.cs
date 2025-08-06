@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
+using Business.DTOs;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
-using System.Text;
+using System.Linq; 
 using System.Threading.Tasks;
 
-namespace Business.DTOs
+namespace Business.Mapping
 {
     public class MappingProfile : Profile
     {
@@ -30,6 +29,8 @@ namespace Business.DTOs
                 .ReverseMap();
 
             CreateMap<User, UserDto>().ReverseMap();
+
+            CreateMap<PImage, PImageDto>().ReverseMap();
         }
     }
 }

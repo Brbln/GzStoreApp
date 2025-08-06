@@ -16,7 +16,7 @@ namespace Entities.Concrete
         public decimal PPrice { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public List<string>? Images { get; set; }
+        public List<PImage> Images { get; set; }
 
     }
 }
