@@ -22,10 +22,24 @@ builder.Services.AddDbContext<GamzeDbContext>(options =>
 // DataAccess
 builder.Services.AddScoped<IProductDal, EfProductDal>();
 builder.Services.AddScoped<ICartItemDal, EfCartItemDal>(); 
+builder.Services.AddScoped<ICartDal, EfCartDal>();
+builder.Services.AddScoped<IUserDal, EfUserDal>();
+builder.Services.AddScoped<IOrderDal, EfOrderDal>();
+builder.Services.AddScoped<IOrderItemDal, EfOrderItemDal>();
+builder.Services.AddScoped<ICategoryDal, EfCategoryDal>();
+builder.Services.AddScoped<IPaymentDal, EfPaymentDal>();
+builder.Services.AddScoped<ISellerDal, EfSellerDal>();
+
 // Business
 builder.Services.AddScoped<IProductService, ProductManager>();
 builder.Services.AddScoped<ICartItemService, CartItemManager>();
-
+builder.Services.AddScoped<ICartService, CartManager>();
+builder.Services.AddScoped<IUserService, UserManager>();
+builder.Services.AddScoped<IOrderService, OrderManager>();
+builder.Services.AddScoped<IOrderItemService, OrderItemManager>();
+builder.Services.AddScoped<ICategoryService, CategoryManager>();
+builder.Services.AddScoped<IPaymentService, PaymentManager>();
+builder.Services.AddScoped<ISellerService, SellerManager>();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MappingProfile>();
 }); 

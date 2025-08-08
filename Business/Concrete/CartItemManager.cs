@@ -67,11 +67,6 @@ namespace Business.Concrete
 
         }
 
-        public List<CartItem> GetByProductId(int productId)
-        {
-            return _cItemDal.GetAll(a => a.ProductId == productId);
-        }
-
         public void Update(CartItem cart)
         {
             var existingItem = _cItemDal.Get(c => c.CartItemId == cart.CartItemId);

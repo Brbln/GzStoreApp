@@ -14,8 +14,7 @@ namespace Business.Abstract
         void Update(CartItem cart);
         void Delete(CartItem cart); 
         CartItem GetById(int id);
-        List<CartItem> GetByCartId(int cartId);
-        List<CartItem> GetByProductId(int productId);
+        List<CartItem> GetByCartId(int cartId); 
         CartItem GetByCartAndProduct(int cartId, int productId);
         void AddOrUpdate(CartItem cart);
         List<CartItemDto> GetCartItemsDto(int cartId);

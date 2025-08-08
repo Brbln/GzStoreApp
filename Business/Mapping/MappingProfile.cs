@@ -29,6 +29,7 @@ namespace Business.Mapping
                 .ReverseMap();
 
             CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User,UserCreateDto>().ReverseMap();
 
             CreateMap<PImage, PImageDto>().ReverseMap();
         }

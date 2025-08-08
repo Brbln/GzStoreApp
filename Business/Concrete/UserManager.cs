@@ -19,7 +19,7 @@ namespace Business.Concrete
         }
 
         public void Add(User user)
-        {
+        { 
             _userDal.Add(user);
         }
 
@@ -38,9 +38,9 @@ namespace Business.Concrete
            return _userDal.GetAll();
         }
 
-        public List<User> GetByEmail(string email)
+        public User GetByEmail(string email)
         {
-            return _userDal.GetAll(a=>a.Email == email);
+            return _userDal.Get(a=>a.Email == email);
         }
 
         public User GetById(int id)
