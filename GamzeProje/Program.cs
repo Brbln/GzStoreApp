@@ -42,10 +42,9 @@ builder.Services.AddScoped<IPaymentService, PaymentManager>();
 builder.Services.AddScoped<ISellerService, SellerManager>();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MappingProfile>();
-}); 
+});
 
-
-
+ 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

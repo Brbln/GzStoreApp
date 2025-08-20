@@ -1,16 +1,14 @@
-﻿using Entities.Abstract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Concrete
+namespace Business.DTOs
 {
-    public class Category : IEntity
+    public class CatCreateDto
     {
         public int CategoryId { get; set; }
         public string CName { get; set; }
-        public ICollection<Product> Products { get; set; } 
     }
 }

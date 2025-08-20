@@ -30,12 +30,19 @@ namespace GamzeProje.Controllers
 
         [HttpPost]
         public IActionResult Add([FromBody]UserCreateDto ucdto ) {
+            
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (_userService.IsEmailExists(ucdto.Email))
+                return BadRequest("Bu e-posta zaten kayıtlı!");
+
+            if (_userService.IsUNameExists(ucdto.UserName))
+                return BadRequest("Bu kullanıcı adı zaten alınmış!");
+
             try
             {
-                var user = _mapper.Map<User>(ucdto);                 
+                var user = _mapper.Map<User>(ucdto);
                 user.Password = ucdto.Password;
 
                 _userService.Add(user);
@@ -46,6 +53,7 @@ namespace GamzeProje.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
         [HttpPut]
         public IActionResult Update([FromBody]UserCreateDto ucdto)
         {
@@ -56,13 +64,20 @@ namespace GamzeProje.Controllers
             if (existingUser == null)
                 return NotFound("Kullanıcı bulunamadı.");
 
+            if(existingUser.Email != ucdto.Email && _userService.IsEmailExists(ucdto.Email))
+                return BadRequest("Bu e-posta başka bir kullanıcı tarafından kullanılıyor!");
+
+            if (existingUser.UserName != ucdto.UserName && _userService.IsUNameExists(ucdto.UserName))
+                return BadRequest("Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor!");
+
             try
             {
                 existingUser.Password = ucdto.Password;
                 existingUser.Address = ucdto.Address;
                 existingUser.PhoneNo = ucdto.PhoneNo;
-
+                existingUser.Email = ucdto.Email;
                 _userService.Update(existingUser);
+
                 return Ok("Kullanıcı başarıyla güncellendi.");
             }
             catch (Exception ex)

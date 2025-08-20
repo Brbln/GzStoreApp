@@ -33,5 +33,6 @@ namespace DataAccess.Concrete.EntityFramework
         {
             return GetAll(u => u.UserName.ToLower() == uName.ToLower()).Any();
         }
+       
     }
 }

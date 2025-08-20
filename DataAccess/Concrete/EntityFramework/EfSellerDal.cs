@@ -12,14 +12,17 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public Seller getByEmail(string email)
         {
-            using var context = new GamzeDbContext();
-            return context.Sellers.FirstOrDefault(s => s.Email == email);
+            return Get(s => s.Email == email);
         }
 
         public Seller getBySName(string sName)
         {
-            using var context = new GamzeDbContext();
-            return context.Sellers.FirstOrDefault(s => s.SellerName == sName);
+            return Get(s => s.SellerName == sName);
+        }
+
+        public Seller GetById(int id)
+        {
+            return Get(u => u.SellerId == id);
         }
     }
 }

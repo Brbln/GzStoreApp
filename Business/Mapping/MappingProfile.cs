@@ -30,8 +30,10 @@ namespace Business.Mapping
 
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<User,UserCreateDto>().ReverseMap();
-
+            CreateMap<Seller, SellerDto>().ReverseMap();
             CreateMap<PImage, PImageDto>().ReverseMap();
+            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Category, CatCreateDto>().ReverseMap();
         }
     }
 }

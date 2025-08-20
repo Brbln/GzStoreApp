@@ -53,5 +53,14 @@ namespace Business.Concrete
             return _userDal.Get(a=>a.UserName == userName);
         }
 
+        public bool IsEmailExists(string email)
+        {
+          return _userDal.IsEmailExists(email);
+        }
+
+        public bool IsUNameExists(string uName)
+        {
+            return _userDal.IsUNameExists(uName);
+        }
     }
 }

@@ -16,5 +16,7 @@ namespace Business.Abstract
         User GetById(int id);
         User GetByEmail(string email);
         User GetByUserName(string userName);
+        bool IsEmailExists(string email);
+        bool IsUNameExists(string uName);
     }
 }
