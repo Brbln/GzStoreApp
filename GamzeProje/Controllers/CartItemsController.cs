@@ -11,6 +11,7 @@ namespace GamzeProje.Controllers
     [ApiController]
     public class CartItemsController : ControllerBase
     {
+
         private readonly ICartItemService _cartItemService;
         private readonly IMapper _mapper;
 
@@ -25,19 +26,39 @@ namespace GamzeProje.Controllers
         {
             var itemsDto = _cartItemService.GetCartItemsDto(cartId);
             if (itemsDto == null || !itemsDto.Any())
-                return NotFound();
+                return NotFound("Sepet boş.");
 
-            return Ok(itemsDto);
+            var cartDto = new CartDto
+            {
+                CartId = cartId,
+                UserId = 1, 
+                Items = itemsDto
+            };
+
+            return Ok(cartDto);  
         }
+
         [HttpPost]
-        public IActionResult Add(CartItemDto cartItemDto)
+        public IActionResult Add(AddCartItemDto addDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var cartItem = _mapper.Map<CartItem>(cartItemDto);
-            _cartItemService.Add(cartItem);
+            var cartItem = _mapper.Map<CartItem>(addDto);
+            _cartItemService.AddOrUpdate(cartItem);
+
             return Ok("Sepete ürün başarıyla eklendi.");
+        }
+
+        [HttpDelete("{cartItemId}")]
+        public IActionResult Delete(int cartItemId)
+        {
+            var cartItem = _cartItemService.GetById(cartItemId);
+            if (cartItem == null)
+                return NotFound();
+
+            _cartItemService.Delete(cartItem);
+            return Ok("Ürün sepetten silindi.");
         }
     }
 }

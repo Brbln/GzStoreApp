@@ -13,23 +13,18 @@ namespace Business.Mapping
 
         public MappingProfile()
         {
-            CreateMap<CartItem, CartItemDto>()
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.PName))
-                .ReverseMap();
+            CreateMap<AddCartItemDto, CartItem>()
+         .ForMember(dest => dest.CartItemId, opt => opt.Ignore())
+         .ForMember(dest => dest.Product, opt => opt.Ignore());  
 
-            CreateMap<Cart, CartDto>()
-                .ReverseMap();
-
+            CreateMap<Cart, CartDto>().ReverseMap();
             CreateMap<Product, ProductDto>().ReverseMap();
-
             CreateMap<Order, OrderDto>().ReverseMap();
-
             CreateMap<OrderItem, OrderItemDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.PName))
                 .ReverseMap();
-
             CreateMap<User, UserDto>().ReverseMap();
-            CreateMap<User,UserCreateDto>().ReverseMap();
+            CreateMap<User, UserCreateDto>().ReverseMap();
             CreateMap<Seller, SellerDto>().ReverseMap();
             CreateMap<PImage, PImageDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();

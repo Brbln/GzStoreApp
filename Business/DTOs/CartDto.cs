@@ -11,7 +11,7 @@ namespace Business.DTOs
     {
         public int CartId { get; set; }
         public int UserId { get; set; }
-        public List<CartItemDto> Items { get; set; }
-        public decimal TotalAmount => Items?.Sum(i => i.Quantity * i.UnitPrice) ?? 0;
+        public List<CartItemDto> Items { get; set; } = new List<CartItemDto>();
+        public decimal TotalAmount => Items.Sum(i => i.TotalPrice);
     }
 }

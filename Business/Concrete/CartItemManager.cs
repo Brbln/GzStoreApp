@@ -16,20 +16,42 @@ namespace Business.Concrete
     {
         private readonly ICartItemDal _cItemDal;
         private readonly IMapper _mapper;
+        private readonly IProductDal _productDal; // Product kontrolü için
+        private readonly ICartDal _cartDal;       // Cart kontrolü için
 
-        public CartItemManager(ICartItemDal cItemDal, IMapper mapper)
+        public CartItemManager(ICartItemDal cItemDal, IMapper mapper, IProductDal productDal, ICartDal cartDal)
         {
             _cItemDal = cItemDal;
             _mapper = mapper;
+            _productDal = productDal;
+            _cartDal = cartDal;
         }
 
         public void Add(CartItem cart)
         {
+            if (_productDal.Get(p => p.ProductId == cart.ProductId) == null)
+                throw new InvalidOperationException("Ürün bulunamadı.");
+
+            if (_cartDal.Get(c => c.CartId == cart.CartId) == null)
+                throw new InvalidOperationException("Sepet bulunamadı.");
+
+            if (cart.Quantity <= 0)
+                throw new InvalidOperationException("Miktar 1’den küçük olamaz.");
+
             _cItemDal.Add(cart);
         }
 
         public void AddOrUpdate(CartItem cart)
         {
+            if (_productDal.Get(p => p.ProductId == cart.ProductId) == null)
+                throw new InvalidOperationException("Ürün bulunamadı.");
+
+            if (_cartDal.Get(c => c.CartId == cart.CartId) == null)
+                throw new InvalidOperationException("Sepet bulunamadı.");
+
+            if (cart.Quantity <= 0)
+                throw new InvalidOperationException("Miktar 1’den küçük olamaz.");
+
             var existing = _cItemDal.Get(c => c.CartId == cart.CartId && c.ProductId == cart.ProductId);
             if (existing != null)
             {
@@ -42,8 +64,7 @@ namespace Business.Concrete
             }
             else
             {
-                if (cart.Quantity > 0)
-                    _cItemDal.Add(cart);
+                _cItemDal.Add(cart);
             }
         }
 
@@ -51,6 +72,7 @@ namespace Business.Concrete
         {
             _cItemDal.Delete(cart);
         }
+
         public CartItem GetByCartAndProduct(int cartId, int productId)
         {
             return _cItemDal.Get(a => a.CartId == cartId && a.ProductId == productId);
@@ -64,7 +86,6 @@ namespace Business.Concrete
         public CartItem GetById(int id)
         {
             return _cItemDal.Get(a => a.CartItemId == id);
-
         }
 
         public void Update(CartItem cart)
@@ -72,6 +93,7 @@ namespace Business.Concrete
             var existingItem = _cItemDal.Get(c => c.CartItemId == cart.CartItemId);
             if (existingItem == null)
                 throw new InvalidOperationException("Sepetinizde bu ürün bulunamadığı için güncellenemedi.");
+
             if (cart.Quantity <= 0)
             {
                 _cItemDal.Delete(existingItem);
@@ -86,9 +108,16 @@ namespace Business.Concrete
         public List<CartItemDto> GetCartItemsDto(int cartId)
         {
             var cartItems = _cItemDal.GetAll(ci => ci.CartId == cartId).ToList();
-            var cartItemsDto = _mapper.Map<List<CartItemDto>>(cartItems);
+
+            var cartItemsDto = cartItems.Select(ci => new CartItemDto
+            {
+                CartItemId = ci.CartItemId,
+                Quantity = ci.Quantity,
+                ProductName = ci.Product?.PName,
+                UnitPrice = ci.Product?.PPrice ?? 0
+            }).ToList();
+
             return cartItemsDto;
         }
-
     }
 }

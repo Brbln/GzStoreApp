@@ -3,7 +3,9 @@ using Business.Abstract;
 using Business.DTOs;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GamzeProje.Controllers
 {
@@ -28,15 +30,19 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add([FromBody] CatCreateDto catDto) {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        public IActionResult Add([FromBody] CatCreateDto createDto) {
 
-            var cat = _mapper.Map<Category>(catDto);
-            _categoryService.Add(cat);
-            return Ok("Kategori başarıyla eklendi.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId != "1") return Forbid();   //sadece user1 ekleyebilir
+
+            var category = _mapper.Map<Category>(createDto);
+            _categoryService.Add(category);
+
+            var catDto = _mapper.Map<CategoryDto>(category);
+            return Ok(catDto);
         }
-
 
         [HttpGet("{id}")]
         public IActionResult getById(int id)
@@ -45,6 +51,37 @@ namespace GamzeProje.Controllers
             if (cat == null) return NotFound();
             var catDtos=_mapper.Map<CategoryDto>(cat);
             return Ok(catDtos);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] CatCreateDto updateDto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId != "1") return Forbid();  // sadece user1 güncelleyebilir
+
+            var category = _categoryService.GetById(id);
+            if (category == null) return NotFound();
+
+            category.CName = updateDto.CName;
+            _categoryService.Update(category);
+
+            var catDto = _mapper.Map<CategoryDto>(category);
+            return Ok(catDto);
+        }
+         
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId != "1") return Forbid();  // sadece user1 silebilir
+
+            var category = _categoryService.GetById(id);
+            if (category == null) return NotFound();
+
+            _categoryService.Delete(category);
+            return Ok("Kategori başarıyla silindi.");
         }
     }
 }

@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 
 namespace Business.DTOs
 {
-    public class UserDto
+    public class AddCartItemDto
     {
-        public int UserId { get; set; }
         [Required]
-        public string Username { get; set; }
+        public int CartId { get; set; }
+
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        public int ProductId { get; set; }
+
+        [Required]
+        [Range(1, int.MaxValue)]
+        public int Quantity { get; set; }
     }
 }
