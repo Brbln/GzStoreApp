@@ -16,8 +16,8 @@ namespace Business.Concrete
     {
         private readonly ICartItemDal _cItemDal;
         private readonly IMapper _mapper;
-        private readonly IProductDal _productDal; // Product kontrolü için
-        private readonly ICartDal _cartDal;       // Cart kontrolü için
+        private readonly IProductDal _productDal; 
+        private readonly ICartDal _cartDal;       
 
         public CartItemManager(ICartItemDal cItemDal, IMapper mapper, IProductDal productDal, ICartDal cartDal)
         {
@@ -25,7 +25,7 @@ namespace Business.Concrete
             _mapper = mapper;
             _productDal = productDal;
             _cartDal = cartDal;
-        }
+        }         
 
         public void Add(CartItem cart)
         {
