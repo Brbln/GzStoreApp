@@ -1,4 +1,4 @@
-using Business.Abstract;
+﻿using Business.Abstract;
 using Business.Concrete;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Business.Mapping;
+using FluentValidation.AspNetCore;
+using Business.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,13 +46,19 @@ builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MappingProfile>();
 });
 
+builder.Services.AddControllers()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<UserCreateDtoValidator>());
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReact",
-      policy => policy
-          .WithOrigins("http://localhost:3000") // React port
-          .AllowAnyHeader()
-          .AllowAnyMethod());
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
 });
 
 

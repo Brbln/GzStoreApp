@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Business.DTOs;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,15 @@ namespace Business.Abstract
 {
     public interface IUserService
     {
-        public void Add(User user);
-        public void Update(User user);
-        public void Delete(User user);
+        void Add(User user);
+        void Update(User user);
+        void UpdateUser(UserUpdateDto dto);
+        void Delete(User user);
         List<User> GetAll();
         User GetById(int id);
         User GetByEmail(string email);
-        User GetByUserName(string userName);
+        User GetByUserName(string username);
         bool IsEmailExists(string email);
-        bool IsUNameExists(string uName);
+        bool IsUNameExists(string username);
     }
 }

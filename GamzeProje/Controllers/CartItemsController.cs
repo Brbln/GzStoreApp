@@ -40,10 +40,7 @@ namespace GamzeProje.Controllers
 
         [HttpPost]
         public IActionResult Add(AddCartItemDto addDto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
+        { 
             var cartItem = _mapper.Map<CartItem>(addDto);
             _cartItemService.AddOrUpdate(cartItem);
 

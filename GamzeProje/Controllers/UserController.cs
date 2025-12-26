@@ -24,100 +24,77 @@ namespace GamzeProje.Controllers
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
-            var userDtos = _mapper.Map<List<UserDto>>(users);
-            return Ok(userDtos);
+            var dtos = _mapper.Map<List<UserDto>>(users);
+            return Ok(dtos);
         }
 
-        [HttpPost]
-        public IActionResult Add([FromBody]UserCreateDto ucdto ) {
-            
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (_userService.IsEmailExists(ucdto.Email))
-                return BadRequest("Bu e-posta zaten kayıtlı!");
-
-            if (_userService.IsUNameExists(ucdto.UserName))
-                return BadRequest("Bu kullanıcı adı zaten alınmış!");
-
-            try
-            {
-                var user = _mapper.Map<User>(ucdto);
-                user.Password = ucdto.Password;
-
-                _userService.Add(user);
-                return Ok("Kullanıcı başarıyla eklendi.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpPut]
-        public IActionResult Update([FromBody]UserCreateDto ucdto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var existingUser = _userService.GetByUserName(ucdto.UserName);
-            if (existingUser == null)
-                return NotFound("Kullanıcı bulunamadı.");
-
-            if(existingUser.Email != ucdto.Email && _userService.IsEmailExists(ucdto.Email))
-                return BadRequest("Bu e-posta başka bir kullanıcı tarafından kullanılıyor!");
-
-            if (existingUser.UserName != ucdto.UserName && _userService.IsUNameExists(ucdto.UserName))
-                return BadRequest("Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor!");
-
-            try
-            {
-                existingUser.Password = ucdto.Password;
-                existingUser.Address = ucdto.Address;
-                existingUser.PhoneNo = ucdto.PhoneNo;
-                existingUser.Email = ucdto.Email;
-                _userService.Update(existingUser);
-
-                return Ok("Kullanıcı başarıyla güncellendi.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);
-            if (user == null) return NotFound();
-            var userdto= _mapper.Map<UserDto>(user);
-            return Ok(userdto);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+            var dto = _mapper.Map<UserDto>(user);
+            return Ok(dto);
         }
 
         [HttpGet("email")]
         public IActionResult GetByEmail([FromQuery] string email)
         {
             var user = _userService.GetByEmail(email);
-            if (user == null) return NotFound();
-            var userdto = _mapper.Map<UserDto>(user);
-            return Ok(userdto);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+            var dto = _mapper.Map<UserDto>(user);
+            return Ok(dto);
         }
 
         [HttpGet("username")]
         public IActionResult GetByUserName([FromQuery] string username)
         {
             var user = _userService.GetByUserName(username);
-            if (user == null) return NotFound();
-            var userdto = _mapper.Map<UserDto>(user);
-            return Ok(userdto);
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
+            var dto = _mapper.Map<UserDto>(user);
+            return Ok(dto);
+        }
+
+        [HttpPost]
+        public IActionResult Add([FromBody] UserCreateDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var user = _mapper.Map<User>(dto);
+                _userService.Add(user);
+                return Ok("Kullanıcı başarıyla eklendi.");
+            }
+            catch (Exception ex)
+            {
+                return Conflict(ex.Message); // DB çakışması için 409
+            }
+        }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] UserUpdateDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                _userService.UpdateUser(dto);
+                return Ok("Kullanıcı başarıyla güncellendi.");
+            }
+            catch (Exception ex)
+            {
+                return Conflict(ex.Message); // DB çakışması için 409
+            }
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             var user = _userService.GetById(id);
-            if (user == null) return NotFound();
-
+            if (user == null) return NotFound("Kullanıcı bulunamadı.");
             _userService.Delete(user);
             return Ok("Kullanıcı başarıyla silindi.");
         }

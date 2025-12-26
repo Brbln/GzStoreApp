@@ -31,8 +31,7 @@ namespace GamzeProje.Controllers
 
         [HttpPost]
         public IActionResult Add([FromBody] CatCreateDto createDto) {
-
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+             
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId != "1") return Forbid();   //sadece user1 ekleyebilir
@@ -45,7 +44,7 @@ namespace GamzeProje.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult getById(int id)
+        public IActionResult GetById(int id)
         {
             var cat = _categoryService.GetById(id);
             if (cat == null) return NotFound();
@@ -55,9 +54,7 @@ namespace GamzeProje.Controllers
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CatCreateDto updateDto)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
+        { 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId != "1") return Forbid();  // sadece user1 güncelleyebilir
 

@@ -74,8 +74,6 @@ namespace GamzeProje.Controllers
         [HttpPost]
         public IActionResult Add(ProductDto productDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
             var product = _mapper.Map<Product>(productDto);
             _productService.Add(product);
             return Ok("Ürün başarıyla eklendi.");
@@ -83,8 +81,7 @@ namespace GamzeProje.Controllers
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, ProductDto productDto)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+        { 
             if (id != productDto.ProductId) return BadRequest("Id uyuşmuyor.");
             var product = _mapper.Map<Product>(productDto);
             _productService.Update(product);
