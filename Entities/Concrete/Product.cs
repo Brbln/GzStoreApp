@@ -21,9 +21,9 @@ namespace Entities.Concrete
         public decimal PPrice { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public List<PImage> Images { get; set; }
-        // Navigation property
+        public List<PImage> Images { get; set; } 
         public ICollection<OrderItem>? OrderItems { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
     }
 }

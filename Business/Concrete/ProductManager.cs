@@ -2,6 +2,7 @@
 using Business.Abstract;
 using Business.DTOs.ProductDTOs;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -35,13 +36,14 @@ namespace Business.Concrete
         }
         public void Delete(int id)
         {
-            var product = _productDal.GetById(id);
-
-            if (product == null)
-                throw new Exception("Ürün bulunamadı.");
-
-            _productDal.Delete(product);
+            var product = _productDal.Get(p => p.ProductId == id);
+            if (product != null)
+            {
+                product.IsDeleted = true;
+                _productDal.Update(product);
+            }
         }
+
         public List<Product> GetAll()
         {
             return _productDal.GetAll();
@@ -51,7 +53,7 @@ namespace Business.Concrete
         {
             if (id <= 0)
                 throw new ArgumentException("Geçersiz ürün ID'si.", nameof(id));
-            return _productDal.Get(a => a.ProductId == id);
+            return _productDal.Get(a => a.ProductId == id && !a.IsDeleted);
         }
 
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
@@ -69,7 +71,7 @@ namespace Business.Concrete
 
         public List<Product> GetByProductName(string name)
         {
-            return _productDal.GetAll(a => a.PName == name);
+            return _productDal.GetAll(a => a.PName.ToLower().Contains(name.ToLower()));
         }
 
         public List<Product> GetByStock(int minStock)
@@ -95,6 +97,8 @@ namespace Business.Concrete
 
             if (product == null)
                 throw new Exception("Ürün bulunamadı.");
+            if (product.IsDeleted)
+                throw new Exception("Bu ürün silinmiş, güncellenemez.");
 
             _mapper.Map(dto, product); 
             _productDal.Update(product);

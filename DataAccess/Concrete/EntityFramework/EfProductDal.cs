@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
@@ -14,49 +13,46 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public Product GetById(int id)
         {
-            return Get(u => u.ProductId == id);
+            return Get(u => u.ProductId == id && !u.IsDeleted);
         }
 
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
         {
             using var context = new GamzeDbContext();
             return context.Products
-                    .Where(p => p.PPrice >= minPrice && p.PPrice <= maxPrice)
-                    .ToList();            
+                          .Where(p => !p.IsDeleted && p.PPrice >= minPrice && p.PPrice <= maxPrice)
+                          .ToList();
         }
 
         public List<Product> GetByProductName(string name)
         {
             using var context = new GamzeDbContext();
-            var pName = context.Products
-                    .Where(i=> i.PName.ToLower().Contains(name.ToLower()))
-                    .ToList();
-                return pName;
+            return context.Products
+                          .Where(p => !p.IsDeleted && p.PName.ToLower().Contains(name.ToLower()))
+                          .ToList();
         }
 
         public List<Product> GetByStock(int minStock)
         {
             using var context = new GamzeDbContext();
-            var pStock = context.Products
-                    .Where(i=> i.PStock >= minStock).ToList();
-                return pStock;
-
+            return context.Products
+                          .Where(p => !p.IsDeleted && p.PStock >= minStock)
+                          .ToList();
         }
 
         public List<Product> GetCatById(int id)
         {
             using var context = new GamzeDbContext();
-            var products = context.Products
-                     .Include(i => i.Category)
-                     .Where(p => p.CategoryId == id)
-                     .ToList();
-                return products;
-               
+            return context.Products
+                          .Include(p => p.Category)
+                          .Where(p => !p.IsDeleted && p.CategoryId == id)
+                          .ToList();
         }
+
         public bool Any(Expression<Func<Product, bool>> filter)
         {
-            using var context = new GamzeDbContext();
-            return context.Products.Any(filter);
+            using var context = new GamzeDbContext(); 
+            return context.Products.Any(p => !p.IsDeleted && filter.Compile()(p));
         }
 
         public void UpdateImages(int productId, List<string> images)
