@@ -1,5 +1,5 @@
 ﻿using Business.Abstract;
-using Business.DTOs;
+using Business.DTOs.userDto;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;

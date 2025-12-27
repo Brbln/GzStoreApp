@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Business.DTOs;
+using Business.DTOs.ProductDTOs;
+using Business.DTOs.userDto;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -18,13 +20,15 @@ namespace Business.Mapping
          .ForMember(dest => dest.Product, opt => opt.Ignore());  
 
             CreateMap<Cart, CartDto>().ReverseMap();
-            CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<Product, ProductDto>(); 
+            CreateMap<ProductCreateDto, Product>();
+            CreateMap<ProductUpdateDto, Product>();
             CreateMap<Order, OrderDto>().ReverseMap();
             CreateMap<OrderItem, OrderItemDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.PName))
                 .ReverseMap();
-            CreateMap<User, UserDto>().ReverseMap();
-            CreateMap<User, UserCreateDto>().ReverseMap();
+            CreateMap<User, UserDto>();
+            CreateMap<User, UserCreateDto>();
             CreateMap<Seller, SellerDto>().ReverseMap();
             CreateMap<PImage, PImageDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();

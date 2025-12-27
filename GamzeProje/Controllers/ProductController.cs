@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Business.Abstract;
-using Business.DTOs;
+using Business.DTOs.ProductDTOs;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -72,30 +72,36 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(ProductDto productDto)
+        public IActionResult Add(ProductCreateDto dto)
         {
-            var product = _mapper.Map<Product>(productDto);
-            _productService.Add(product);
-            return Ok("Ürün başarıyla eklendi.");
+            try
+            {
+                _productService.Add(dto);
+                return Ok("Ürün başarıyla eklendi.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, ProductDto productDto)
-        { 
-            if (id != productDto.ProductId) return BadRequest("Id uyuşmuyor.");
-            var product = _mapper.Map<Product>(productDto);
-            _productService.Update(product);
+        public IActionResult Update(int id, ProductUpdateDto dto)
+        {
+            if (id != dto.ProductId)
+                return BadRequest("Id uyuşmuyor.");
+
+            _productService.Update(dto);
             return Ok("Ürün güncellendi.");
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id) 
-        { 
-            var product=_productService.GetById(id);
-            if (product == null) return NotFound();
-            _productService.Delete(product);
+        public IActionResult Delete(int id)
+        {
+            _productService.Delete(id);
             return Ok("Ürün silindi.");
         }
+
 
         [HttpPut("update-images/{productId}")]
         public IActionResult UpdateImages(int productId, [FromBody] List<string> imageUrls)

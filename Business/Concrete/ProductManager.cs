@@ -1,4 +1,6 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
+using Business.DTOs.ProductDTOs;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -11,21 +13,35 @@ namespace Business.Concrete
 {
     public class ProductManager : IProductService
     {
-        IProductDal _productDal;
-        public ProductManager(IProductDal productDal)
+        private readonly IProductDal _productDal;
+        private readonly IMapper _mapper;
+
+        public ProductManager(IProductDal productDal, IMapper mapper)
         {
             _productDal = productDal;
+            _mapper = mapper;
         }
-        public void Add(Product product)
+        public void Add(ProductCreateDto dto)
         {
+            bool exists = _productDal.Any(p =>
+                p.PName == dto.PName &&
+                p.CategoryId == dto.CategoryId);
+
+            if (exists)
+                throw new Exception("Bu ürün bu kategori altında zaten mevcut.");
+
+            var product = _mapper.Map<Product>(dto);
             _productDal.Add(product);
         }
-
-        public void Delete(Product product)
+        public void Delete(int id)
         {
+            var product = _productDal.GetById(id);
+
+            if (product == null)
+                throw new Exception("Ürün bulunamadı.");
+
             _productDal.Delete(product);
         }
-
         public List<Product> GetAll()
         {
             return _productDal.GetAll();
@@ -73,8 +89,14 @@ namespace Business.Concrete
             return _productDal.GetAll(a=>a.CategoryId== id);
         }
 
-        public void Update(Product product)
+        public void Update(ProductUpdateDto dto)
         {
+            var product = _productDal.GetById(dto.ProductId);
+
+            if (product == null)
+                throw new Exception("Ürün bulunamadı.");
+
+            _mapper.Map(dto, product); 
             _productDal.Update(product);
         }
 

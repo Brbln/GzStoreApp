@@ -5,12 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.DTOs
+namespace Business.DTOs.ProductDTOs
 {
     public class ProductDto
-    {
-        public int ProductId { get; set; }
-
+    {        
         [Required]
         public string PName { get; set; }
         public string PDescription { get; set; } 

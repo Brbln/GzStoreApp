@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,6 +52,11 @@ namespace DataAccess.Concrete.EntityFramework
                      .ToList();
                 return products;
                
+        }
+        public bool Any(Expression<Func<Product, bool>> filter)
+        {
+            using var context = new GamzeDbContext();
+            return context.Products.Any(filter);
         }
 
         public void UpdateImages(int productId, List<string> images)

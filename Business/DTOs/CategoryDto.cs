@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Business.DTOs.ProductDTOs;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

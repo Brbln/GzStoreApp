@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Business.Abstract;
-using Business.DTOs;
+using Business.DTOs.userDto;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

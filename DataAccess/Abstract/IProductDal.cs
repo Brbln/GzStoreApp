@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,5 +16,7 @@ namespace DataAccess.Abstract
         List<Product> GetByStock(int minStock);
         List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice);
         void UpdateImages(int productId, List<string> images);
+        bool Any(Expression<Func<Product, bool>> filter);
+
     }
 }
