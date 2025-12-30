@@ -12,7 +12,11 @@ namespace Business.Abstract
     {
         void Add(ProductCreateDto dto);
         void Update(ProductUpdateDto dto);
-        public void Delete(int id);
+        public void Delete(int id); //soft delete
+        void Restore(int productId); //restore
+        void HardDelete(int productId); //hard delete
+        List<Product> GetAllForSeller();
+        Product GetByIdForSeller(int id);
         List<Product> GetAll();
         Product GetById(int id);
         List<Product> GetCatById(int id);

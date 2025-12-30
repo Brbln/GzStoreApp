@@ -26,6 +26,28 @@ namespace DataAccess.Concrete.EntityFramework
                 optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=GamzeDb;Trusted_Connection=true");
             }
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Product>()
+                .Property(p => p.PPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalAmount)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<OrderItem>()
+                .Property(oi => oi.UnitPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<OrderItem>()
+                .Property(oi => oi.Quantity)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.Amount)
+                .HasPrecision(18, 2);
+        }
         public DbSet<User> Users { get; set; }
         public DbSet<Seller> Sellers { get; set; }
         public DbSet<Product> Products { get; set; }

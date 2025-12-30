@@ -59,5 +59,25 @@ namespace DataAccess.Concrete.EntityFramework
         {
             throw new NotImplementedException();
         }
+
+        public Product GetByIdWithDeleted(int id)
+        {
+            using var context = new GamzeDbContext();
+            return context.Products
+                          .FirstOrDefault(p => p.ProductId == id);
+        }
+        public List<Product> GetAllWithDeleted()
+        {
+            using var context = new GamzeDbContext();
+            return context.Products
+                          .Include(p => p.Category)
+                          .ToList();
+        }
+        public void HardDelete(Product product)
+        {
+            using var context = new GamzeDbContext();
+            context.Products.Remove(product);
+            context.SaveChanges();
+        }
     }
 }

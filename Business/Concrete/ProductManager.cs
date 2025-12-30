@@ -36,14 +36,48 @@ namespace Business.Concrete
         }
         public void Delete(int id)
         {
-            var product = _productDal.Get(p => p.ProductId == id);
-            if (product != null)
-            {
-                product.IsDeleted = true;
-                _productDal.Update(product);
-            }
+            var product = _productDal.GetById(id);
+
+            if (product == null)
+                throw new Exception("Ürün bulunamadı.");
+
+            product.IsDeleted = true;
+            _productDal.Update(product);
+        }
+        public void Restore(int productId)
+        {
+            var product = _productDal.GetByIdWithDeleted(productId);
+
+            if (product == null)
+                throw new Exception("Ürün bulunamadı.");
+
+            if (!product.IsDeleted)
+                throw new Exception("Ürün zaten aktif.");
+
+            product.IsDeleted = false;
+            _productDal.Update(product);
+        }
+        public void HardDelete(int productId)
+        {
+            var product = _productDal.GetByIdWithDeleted(productId);
+
+            if (product == null)
+                throw new Exception("Ürün bulunamadı.");
+
+            _productDal.HardDelete(product);
+        }
+        public List<Product> GetAllForSeller()
+        {
+            return _productDal.GetAllWithDeleted();
         }
 
+        public Product GetByIdForSeller(int id)
+        {
+            if (id <= 0)
+                throw new ArgumentException("Geçersiz ID");
+
+            return _productDal.GetByIdWithDeleted(id);
+        }
         public List<Product> GetAll()
         {
             return _productDal.GetAll();
