@@ -23,7 +23,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=GamzeDb;Trusted_Connection=true");
+                optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=GzAppDb;Trusted_Connection=true");
             }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,7 +31,9 @@ namespace DataAccess.Concrete.EntityFramework
             modelBuilder.Entity<Product>()
                 .Property(p => p.PPrice)
                 .HasPrecision(18, 2);
-
+            modelBuilder.Entity<Product>()
+                .HasQueryFilter(p => !p.IsDeleted);
+           
             modelBuilder.Entity<Order>()
                 .Property(o => o.TotalAmount)
                 .HasPrecision(18, 2);
@@ -47,6 +49,8 @@ namespace DataAccess.Concrete.EntityFramework
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
                 .HasPrecision(18, 2);
+
+            base.OnModelCreating(modelBuilder);
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Seller> Sellers { get; set; }

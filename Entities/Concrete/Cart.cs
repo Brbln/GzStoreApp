@@ -10,9 +10,11 @@ namespace Entities.Concrete
     public class Cart : IEntity
     {
         public int CartId { get; set; }
+
         public int UserId { get; set; }
         public User User { get; set; }
-        public List<CartItem> CartItems { get; set; } = new List<CartItem>();
 
+        public List<CartItem> CartItems { get; set; } = new();
     }
+
 }

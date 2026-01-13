@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,19 +12,26 @@ namespace Entities.Concrete
     public class Product : IEntity
     {
         public int ProductId { get; set; }
-        [Required]
-        [MaxLength(100)]
+
+        [Required, MaxLength(100)]
         public string PName { get; set; }
-        public string PDescription { get; set; }
+
+        [MaxLength(1000)]
+        public string? PDescription { get; set; }
+
         [Required]
         public int PStock { get; set; }
-        [Required]
+
+        [Required, Column(TypeName = "decimal(18,2)")]
         public decimal PPrice { get; set; }
+
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-        public List<PImage> Images { get; set; } 
-        public ICollection<OrderItem>? OrderItems { get; set; }
-        public bool IsDeleted { get; set; } = false;
 
+        public List<PImage> Images { get; set; } = new();
+
+        public ICollection<OrderItem>? OrderItems { get; set; }
+
+        public bool IsDeleted { get; set; } = false;
     }
 }
