@@ -12,7 +12,7 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public Cart GetByCartId(int cartId)
         {
-            return Get(c => c.CartId == cartId);
+            return Get(c => c.Id == cartId);
         }
 
         public Cart GetByUserId(int userId)

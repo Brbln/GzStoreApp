@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace Entities.Concrete
 {
-    public class PImage : IEntity
-    {
-        public int Id { get; set; }
-
+    public class PImage :BaseEntity, IEntity
+    { 
         public int ProductId { get; set; }
 
         [Required, MaxLength(300)]

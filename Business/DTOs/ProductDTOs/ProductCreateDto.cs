@@ -9,11 +9,18 @@ namespace Business.DTOs.ProductDTOs
 {
     public class ProductCreateDto
     {
+        [Required]
         public string PName { get; set; }
-        public string PDescription { get; set; }
+
+        public string? PDescription { get; set; }
+
+        [Range(0, int.MaxValue)]
         public int PStock { get; set; }
+
+        [Range(0.01, double.MaxValue)]
         public decimal PPrice { get; set; }
+
+        [Required]
         public int CategoryId { get; set; }
-        public List<PImageDto> Images { get; set; } = new();
     }
 }

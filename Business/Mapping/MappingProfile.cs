@@ -16,7 +16,7 @@ namespace Business.Mapping
         public MappingProfile()
         {
             CreateMap<AddCartItemDto, CartItem>()
-         .ForMember(dest => dest.CartItemId, opt => opt.Ignore())
+         .ForMember(dest => dest.Id, opt => opt.Ignore())
          .ForMember(dest => dest.Product, opt => opt.Ignore());  
 
             CreateMap<Cart, CartDto>().ReverseMap();

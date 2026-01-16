@@ -35,7 +35,7 @@ namespace Business.Concrete
 
         public OrderItem GetById(int id)
         {
-            return _oItemDal.Get(a => a.OrderItemId == id);
+            return _oItemDal.Get(a => a.Id == id);
         }
 
         public OrderItem GetByOrderAndProduct(int orderId, int productId)

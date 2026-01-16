@@ -40,7 +40,7 @@ namespace Business.Concrete
 
         public Category GetById(int id)
         {
-            return _catDal.Get(a => a.CategoryId == id);
+            return _catDal.Get(a => a.Id == id);
         }
 
         public void Update(Category cat)

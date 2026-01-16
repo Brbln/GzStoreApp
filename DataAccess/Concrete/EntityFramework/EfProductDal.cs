@@ -13,7 +13,7 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public Product GetById(int id)
         {
-            return Get(u => u.ProductId == id && !u.IsDeleted);
+            return Get(u => u.Id == id && !u.IsDeleted);
         }
 
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
@@ -64,7 +64,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using var context = new GamzeDbContext();
             return context.Products
-                          .FirstOrDefault(p => p.ProductId == id);
+                          .FirstOrDefault(p => p.Id == id);
         }
         public List<Product> GetAllWithDeleted()
         {

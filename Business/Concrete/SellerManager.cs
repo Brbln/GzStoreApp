@@ -35,7 +35,7 @@ namespace Business.Concrete
 
         public Seller GetById(int id)
         {
-            return _sellerDal.Get(a=>a.SellerId ==id);
+            return _sellerDal.Get(a=>a.Id ==id);
         }
 
         public void Update(Seller seller)

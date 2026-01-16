@@ -10,7 +10,7 @@ Console.WriteLine("Ürün adı 'elma' içeren ürünler:");
 var productsByName = productDal.GetByProductName("elma");
 foreach (var product in productsByName)
 {
-    Console.WriteLine($"ID: {product.ProductId}, Adı: {product.PName}, Stok: {product.PStock}");
+    Console.WriteLine($"ID: {product.Id}, Adı: {product.PName}, Stok: {product.PStock}");
 }
 
 // Stok miktarına göre arama testi
@@ -18,7 +18,7 @@ Console.WriteLine("\nStok miktarı 10'dan fazla olan ürünler:");
 var productsByStock = productDal.GetByStock(10);
 foreach (var product in productsByStock)
 {
-    Console.WriteLine($"ID: {product.ProductId}, Adı: {product.PName}, Stok: {product.PStock}");
+    Console.WriteLine($"ID: {product.Id}, Adı: {product.PName}, Stok: {product.PStock}");
 }
 
 // Kategori ID'ye göre ürünler
@@ -26,7 +26,7 @@ Console.WriteLine("\nKategori ID = 1 olan ürünler:");
 var productsByCategory = productDal.GetCatById(1);
 foreach (var product in productsByCategory)
 {
-    Console.WriteLine($"ID: {product.ProductId}, Adı: {product.PName}, Kategori: {product.Category.CName}");
+    Console.WriteLine($"ID: {product.Id}, Adı: {product.PName}, Kategori: {product.Category.CName}");
 }
 
 Console.WriteLine("\nTest tamamlandı.");

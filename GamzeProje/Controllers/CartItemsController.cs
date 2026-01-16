@@ -1,17 +1,16 @@
 ﻿using AutoMapper;
 using Business.Abstract;
-using Business.DTOs;
+using Business.DTOs; 
 using Entities.Concrete;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
-namespace GamzeProje.Controllers
+namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class CartItemsController : ControllerBase
     {
-
         private readonly ICartItemService _cartItemService;
         private readonly IMapper _mapper;
 
@@ -21,6 +20,7 @@ namespace GamzeProje.Controllers
             _mapper = mapper;
         }
 
+        // Sepetteki ürünleri DTO ile getir
         [HttpGet("{cartId}")]
         public IActionResult GetCartItems(int cartId)
         {
@@ -31,30 +31,36 @@ namespace GamzeProje.Controllers
             var cartDto = new CartDto
             {
                 CartId = cartId,
-                UserId = 1, 
-                Items = itemsDto
+                Items = itemsDto.ToList(),
             };
 
-            return Ok(cartDto);  
+            return Ok(cartDto);
         }
 
+        // Sepete ürün ekleme
         [HttpPost]
-        public IActionResult Add(AddCartItemDto addDto)
-        { 
+        public IActionResult Add([FromBody] AddCartItemDto addDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // DTO -> Entity map
             var cartItem = _mapper.Map<CartItem>(addDto);
+
             _cartItemService.AddOrUpdate(cartItem);
 
             return Ok("Sepete ürün başarıyla eklendi.");
         }
 
+        // Sepetten ürün silme 
         [HttpDelete("{cartItemId}")]
         public IActionResult Delete(int cartItemId)
         {
             var cartItem = _cartItemService.GetById(cartItemId);
             if (cartItem == null)
-                return NotFound();
+                return NotFound("Ürün bulunamadı.");
 
-            _cartItemService.Delete(cartItem);
+            _cartItemService.Delete(cartItem); // Soft delete mantığı uygulanmalı
             return Ok("Ürün sepetten silindi.");
         }
     }

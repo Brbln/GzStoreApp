@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 
 namespace Entities.Concrete
 {
-    public class Product : IEntity
-    {
-        public int ProductId { get; set; }
-
+    public class Product : BaseEntity, IEntity
+    { 
         [Required, MaxLength(100)]
         public string PName { get; set; }
 
@@ -30,8 +28,6 @@ namespace Entities.Concrete
 
         public List<PImage> Images { get; set; } = new();
 
-        public ICollection<OrderItem>? OrderItems { get; set; }
-
-        public bool IsDeleted { get; set; } = false;
+        public ICollection<OrderItem>? OrderItems { get; set; } 
     }
 }

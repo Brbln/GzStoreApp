@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Entities.Abstract;
+using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class GamzeDbContext :DbContext
+    public class GamzeDbContext : DbContext
     {
         public GamzeDbContext() : base()
         {
@@ -31,9 +32,7 @@ namespace DataAccess.Concrete.EntityFramework
             modelBuilder.Entity<Product>()
                 .Property(p => p.PPrice)
                 .HasPrecision(18, 2);
-            modelBuilder.Entity<Product>()
-                .HasQueryFilter(p => !p.IsDeleted);
-           
+
             modelBuilder.Entity<Order>()
                 .Property(o => o.TotalAmount)
                 .HasPrecision(18, 2);
@@ -42,13 +41,30 @@ namespace DataAccess.Concrete.EntityFramework
                 .Property(oi => oi.UnitPrice)
                 .HasPrecision(18, 2);
 
-            modelBuilder.Entity<OrderItem>()
-                .Property(oi => oi.Quantity)
-                .HasPrecision(18, 2);
-
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Cart)
+                .WithOne(c => c.User)
+                .HasForeignKey<Cart>(c => c.UserId);
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.CartItems)
+                .HasForeignKey(ci => ci.CartId);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(oi => oi.OrderId);
+
+            modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
+            modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
+            modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
+
 
             base.OnModelCreating(modelBuilder);
         }
@@ -62,5 +78,11 @@ namespace DataAccess.Concrete.EntityFramework
         public DbSet<Order> Orders { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public void SoftDelete<TEntity>(TEntity entity) where TEntity : BaseEntity
+        {
+            entity.IsDeleted = true;
+            Set<TEntity>().Update(entity);
+            SaveChanges();
+        }
     }
 }

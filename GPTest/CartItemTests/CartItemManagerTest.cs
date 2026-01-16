@@ -20,9 +20,9 @@ namespace GPTest.CartItemTests
 
             // Expression tipine uyumlu Setup
             mockProductDal.Setup(p => p.Get(It.IsAny<Expression<Func<Product, bool>>>()))
-                          .Returns(new Product { ProductId = 1, PName = "Test", PPrice = 10 });
+                          .Returns(new Product { Id = 1, PName = "Test", PPrice = 10 });
             mockCartDal.Setup(c => c.Get(It.IsAny<Expression<Func<Cart, bool>>>()))
-                       .Returns(new Cart { CartId = 1, UserId = 1 });
+                       .Returns(new Cart { Id = 1, UserId = 1 });
 
             var manager = new CartItemManager(mockDal.Object, mockMapper.Object, mockProductDal.Object, mockCartDal.Object);
             var item = new CartItem { CartId = 1, ProductId = 1, Quantity = 2 };
@@ -44,9 +44,9 @@ namespace GPTest.CartItemTests
             var mockCartDal = new Mock<ICartDal>();
 
             mockProductDal.Setup(p => p.Get(It.IsAny<Expression<Func<Product, bool>>>()))
-                          .Returns(new Product { ProductId = 2, PName = "Test2", PPrice = 20 });
+                          .Returns(new Product { Id = 2, PName = "Test2", PPrice = 20 });
             mockCartDal.Setup(c => c.Get(It.IsAny<Expression<Func<Cart, bool>>>()))
-                       .Returns(new Cart { CartId = 1, UserId = 1 });
+                       .Returns(new Cart { Id = 1, UserId = 1 });
 
             var manager = new CartItemManager(mockDal.Object, mockMapper.Object, mockProductDal.Object, mockCartDal.Object);
             var item = new CartItem { CartId = 1, ProductId = 2, Quantity = 3 };

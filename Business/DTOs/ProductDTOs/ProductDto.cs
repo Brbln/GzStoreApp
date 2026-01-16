@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace Business.DTOs.ProductDTOs
 {
     public class ProductDto
-    {        
+    {
+        public int ProductId { get; set; }
         [Required]
         public string PName { get; set; }
         public string PDescription { get; set; } 

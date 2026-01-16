@@ -8,14 +8,13 @@ using System.Threading.Tasks;
 
 namespace Entities.Concrete
 {
-    public class Category : IEntity
-    {
-        public int CategoryId { get; set; }
+    public class Category :BaseEntity, IEntity
+    { 
 
         [Required, MaxLength(100)]
         public string CName { get; set; }
 
-        public ICollection<Product> Products { get; set; }
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 
 }

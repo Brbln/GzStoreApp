@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 
 namespace Entities.Concrete
 {
-    public class Cart : IEntity
-    {
-        public int CartId { get; set; }
-
+    public class Cart : BaseEntity, IEntity
+    { 
         public int UserId { get; set; }
         public User User { get; set; }
 
-        public List<CartItem> CartItems { get; set; } = new();
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     }
 
 }

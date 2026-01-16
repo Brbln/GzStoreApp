@@ -8,20 +8,21 @@ using System.Threading.Tasks;
 
 namespace Entities.Concrete
 {
-    public class Seller : IEntity
+    public class Seller : BaseEntity, IEntity
     {
-        public int SellerId { get; set; } = 1;
-
         [Required, MaxLength(100)]
         public string SellerName { get; set; }
 
-        [Required, MaxLength(100)]
-        public string Password { get; set; }
+        [Required]
+        public string PasswordHash { get; set; }
 
         [Required, MaxLength(100)]
         public string Email { get; set; }
 
         [MaxLength(20)]
         public string? PhoneNo { get; set; }
+
+        public ICollection<Product> Products { get; set; }
     }
+
 }

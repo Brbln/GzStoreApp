@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 namespace Business.DTOs
 {
     public class AddCartItemDto
-    {
-        [Required]
-        public int CartId { get; set; }
+    { 
 
         [Required]
         public int ProductId { get; set; }

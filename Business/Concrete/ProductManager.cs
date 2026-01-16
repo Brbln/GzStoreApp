@@ -87,7 +87,7 @@ namespace Business.Concrete
         {
             if (id <= 0)
                 throw new ArgumentException("Geçersiz ürün ID'si.", nameof(id));
-            return _productDal.Get(a => a.ProductId == id && !a.IsDeleted);
+            return _productDal.Get(a => a.Id == id && !a.IsDeleted);
         }
 
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)

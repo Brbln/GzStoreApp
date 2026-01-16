@@ -22,7 +22,7 @@ namespace DataAccess.Concrete.EntityFramework
 
         public Seller GetById(int id)
         {
-            return Get(u => u.SellerId == id);
+            return Get(u => u.Id == id);
         }
     }
 }

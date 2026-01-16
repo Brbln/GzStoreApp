@@ -13,7 +13,7 @@ namespace DataAccess.Concrete.EntityFramework
 
         public User GetById(int id)
         {
-            return Get(u => u.UserId == id);
+            return Get(u => u.Id == id);
         }
         public User GetByEmail(string email)
         {

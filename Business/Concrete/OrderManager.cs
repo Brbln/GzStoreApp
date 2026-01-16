@@ -33,7 +33,7 @@ namespace Business.Concrete
 
         public Order GetById(int id)
         {
-            return _orderDal.Get(a=>a.OrderId==id);
+            return _orderDal.Get(a=>a.Id==id);
         }
 
         public void Update(Order order)

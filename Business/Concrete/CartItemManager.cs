@@ -29,10 +29,10 @@ namespace Business.Concrete
 
         public void Add(CartItem cart)
         {
-            if (_productDal.Get(p => p.ProductId == cart.ProductId) == null)
+            if (_productDal.Get(p => p.Id == cart.ProductId) == null)
                 throw new InvalidOperationException("Ürün bulunamadı.");
 
-            if (_cartDal.Get(c => c.CartId == cart.CartId) == null)
+            if (_cartDal.Get(c => c.Id == cart.CartId) == null)
                 throw new InvalidOperationException("Sepet bulunamadı.");
 
             if (cart.Quantity <= 0)
@@ -43,10 +43,10 @@ namespace Business.Concrete
 
         public void AddOrUpdate(CartItem cart)
         {
-            if (_productDal.Get(p => p.ProductId == cart.ProductId) == null)
+            if (_productDal.Get(p => p.Id == cart.ProductId) == null)
                 throw new InvalidOperationException("Ürün bulunamadı.");
 
-            if (_cartDal.Get(c => c.CartId == cart.CartId) == null)
+            if (_cartDal.Get(c => c.Id == cart.CartId) == null)
                 throw new InvalidOperationException("Sepet bulunamadı.");
 
             if (cart.Quantity <= 0)
@@ -85,12 +85,12 @@ namespace Business.Concrete
 
         public CartItem GetById(int id)
         {
-            return _cItemDal.Get(a => a.CartItemId == id);
+            return _cItemDal.Get(a => a.Id == id);
         }
 
         public void Update(CartItem cart)
         {
-            var existingItem = _cItemDal.Get(c => c.CartItemId == cart.CartItemId);
+            var existingItem = _cItemDal.Get(c => c.Id == cart.Id);
             if (existingItem == null)
                 throw new InvalidOperationException("Sepetinizde bu ürün bulunamadığı için güncellenemedi.");
 
@@ -111,7 +111,7 @@ namespace Business.Concrete
 
             var cartItemsDto = cartItems.Select(ci => new CartItemDto
             {
-                CartItemId = ci.CartItemId,
+                CartItemId = ci.Id,
                 Quantity = ci.Quantity,
                 ProductName = ci.Product?.PName,
                 UnitPrice = ci.Product?.PPrice ?? 0
