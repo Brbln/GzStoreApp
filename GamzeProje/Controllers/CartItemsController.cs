@@ -56,11 +56,10 @@ namespace WebAPI.Controllers
         [HttpDelete("{cartItemId}")]
         public IActionResult Delete(int cartItemId)
         {
-            var cartItem = _cartItemService.GetById(cartItemId);
-            if (cartItem == null)
-                return NotFound("Ürün bulunamadı.");
-
-            _cartItemService.Delete(cartItem); // Soft delete mantığı uygulanmalı
+            var result = _cartItemService.Delete(cartItemId);
+            if (!result.Success)
+                return NotFound(result.Message);
+             
             return Ok("Ürün sepetten silindi.");
         }
     }

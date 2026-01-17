@@ -1,4 +1,5 @@
 ﻿using Business.DTOs;
+using Core.Utilities.Results;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Business.Abstract
     {
         void Add(CartItem cart);
         void Update(CartItem cart);
-        void Delete(CartItem cart); 
+        IResult Delete(int id);
         CartItem GetById(int id);
         List<CartItem> GetByCartId(int cartId); 
         CartItem GetByCartAndProduct(int cartId, int productId);
