@@ -1,4 +1,5 @@
 ﻿using Business.DTOs.ProductDTOs;
+using Core.Utilities.Results;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -9,20 +10,25 @@ using System.Threading.Tasks;
 namespace Business.Abstract
 {
     public interface IProductService
-    {
-        void Add(ProductCreateDto dto);
-        void Update(ProductUpdateDto dto);
-        public void Delete(int id); //soft delete
-        void Restore(int productId); //restore
-        void HardDelete(int productId); //hard delete
-        List<Product> GetAllForSeller();
-        Product GetByIdForSeller(int id);
-        List<Product> GetAll();
-        Product GetById(int id);
-        List<Product> GetCatById(int id);
-        List<Product> GetByProductName(string name);
-        List<Product> GetByStock(int minStock);
-        List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice);
-        void UpdateImages(int productId, List<string> images); 
+    { 
+        IResult Add(ProductCreateDto dto);
+        IResult Update(ProductUpdateDto dto);
+         
+        IResult Delete(int id);          // Soft Delete
+        IResult Restore(int productId);  // Restore (IsDeleted = false)
+        IResult HardDelete(int productId); // Hard Delete
+         
+        IDataResult<List<Product>> GetAllForSeller();
+        IDataResult<Product> GetByIdForSeller(int id);
+         
+        IDataResult<List<Product>> GetAll();
+        IDataResult<Product> GetById(int id);
+         
+        IDataResult<List<Product>> GetCatById(int id);
+        IDataResult<List<Product>> GetByProductName(string name);
+        IDataResult<List<Product>> GetByStock(int minStock);
+        IDataResult<List<Product>> GetByPriceRange(decimal minPrice, decimal maxPrice);
+         
+        IResult UpdateImages(int productId, List<string> images);
     }
 }

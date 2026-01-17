@@ -16,6 +16,21 @@ namespace DataAccess.Concrete.EntityFramework
             return Get(u => u.Id == id && !u.IsDeleted);
         }
 
+        public Product GetByIdWithDeleted(int id)
+        {
+            using var context = new GamzeDbContext();
+            return context.Products
+                          .IgnoreQueryFilters()
+                          .FirstOrDefault(p => p.Id == id);
+        }
+
+        public List<Product> GetAllWithDeleted()
+        {
+            using var context = new GamzeDbContext();
+            return context.Products
+                          .Include(p => p.Category)
+                          .ToList();
+        }
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
         {
             using var context = new GamzeDbContext();
@@ -51,33 +66,35 @@ namespace DataAccess.Concrete.EntityFramework
 
         public bool Any(Expression<Func<Product, bool>> filter)
         {
-            using var context = new GamzeDbContext(); 
-            return context.Products.Any(p => !p.IsDeleted && filter.Compile()(p));
-        }
-
-        public void UpdateImages(int productId, List<string> images)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Product GetByIdWithDeleted(int id)
-        {
             using var context = new GamzeDbContext();
             return context.Products
-                          .FirstOrDefault(p => p.Id == id);
-        }
-        public List<Product> GetAllWithDeleted()
-        {
-            using var context = new GamzeDbContext();
-            return context.Products
-                          .Include(p => p.Category)
-                          .ToList();
-        }
+                      .IgnoreQueryFilters()
+                      .Any(filter);
+        }     
         public void HardDelete(Product product)
         {
             using var context = new GamzeDbContext();
+            context.Products.Attach(product);
             context.Products.Remove(product);
             context.SaveChanges();
+        }
+        public void UpdateImages(int productId, List<string> images)
+        {
+
+            //using var context = new GamzeDbContext();
+
+            //var product = context.Products
+            //                     .IgnoreQueryFilters()
+            //                     .FirstOrDefault(p => p.Id == productId);
+
+            //if (product == null)
+            //    throw new Exception("Ürün bulunamadı.");
+
+            //product.Images = images;
+            //product.UpdatedDate = DateTime.Now;
+
+            //context.Products.Update(product);
+            //context.SaveChanges();
         }
     }
 }

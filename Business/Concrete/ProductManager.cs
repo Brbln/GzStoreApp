@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Business.Abstract;
 using Business.DTOs.ProductDTOs;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
@@ -22,125 +23,174 @@ namespace Business.Concrete
             _productDal = productDal;
             _mapper = mapper;
         }
-        public void Add(ProductCreateDto dto)
+        public IResult Add(ProductCreateDto dto)
         {
             bool exists = _productDal.Any(p =>
                 p.PName == dto.PName &&
-                p.CategoryId == dto.CategoryId);
+                p.CategoryId == dto.CategoryId &&
+                !p.IsDeleted);
 
             if (exists)
-                throw new Exception("Bu ürün bu kategori altında zaten mevcut.");
+                return new ErrorResult("Bu ürün bu kategori altında zaten mevcut.");
 
             var product = _mapper.Map<Product>(dto);
+            product.CreatedDate = DateTime.Now;
+
             _productDal.Add(product);
+
+            return new SuccessResult("Ürün başarıyla eklendi.");
         }
-        public void Delete(int id)
-        {
-            var product = _productDal.GetById(id);
-
-            if (product == null)
-                throw new Exception("Ürün bulunamadı.");
-
-            product.IsDeleted = true;
-            _productDal.Update(product);
-        }
-        public void Restore(int productId)
-        {
-            var product = _productDal.GetByIdWithDeleted(productId);
-
-            if (product == null)
-                throw new Exception("Ürün bulunamadı.");
-
-            if (!product.IsDeleted)
-                throw new Exception("Ürün zaten aktif.");
-
-            product.IsDeleted = false;
-            _productDal.Update(product);
-        }
-        public void HardDelete(int productId)
-        {
-            var product = _productDal.GetByIdWithDeleted(productId);
-
-            if (product == null)
-                throw new Exception("Ürün bulunamadı.");
-
-            _productDal.HardDelete(product);
-        }
-        public List<Product> GetAllForSeller()
-        {
-            return _productDal.GetAllWithDeleted();
-        }
-
-        public Product GetByIdForSeller(int id)
-        {
-            if (id <= 0)
-                throw new ArgumentException("Geçersiz ID");
-
-            return _productDal.GetByIdWithDeleted(id);
-        }
-        public List<Product> GetAll()
-        {
-            return _productDal.GetAll();
-        }
-
-        public Product GetById(int id)
-        {
-            if (id <= 0)
-                throw new ArgumentException("Geçersiz ürün ID'si.", nameof(id));
-            return _productDal.Get(a => a.Id == id && !a.IsDeleted);
-        }
-
-        public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
-        {
-            if (minPrice < 0 || maxPrice < 0)
-                throw new ArgumentException("Fiyatlar negatif olamaz.");
-
-            if (minPrice > maxPrice)
-                throw new ArgumentException("Minimum fiyat, maksimum fiyattan büyük olamaz.", nameof(minPrice));
-
-            var products = _productDal.GetAll(a => a.PPrice >= minPrice && a.PPrice <= maxPrice);
-
-            return products ?? new List<Product>();
-        }
-
-        public List<Product> GetByProductName(string name)
-        {
-            return _productDal.GetAll(a => a.PName.ToLower().Contains(name.ToLower()));
-        }
-
-        public List<Product> GetByStock(int minStock)
-        {
-            if (minStock == 0)
-                return _productDal.GetAll(a => a.PStock == 0) ?? new List<Product>();
-
-            if (minStock < 5)
-                Console.WriteLine("Uyarı: Stoklar tükenmek üzere.");
-
-            return _productDal.GetAll(a => a.PStock >= minStock) ?? new List<Product>();
-
-        }
-
-        public List<Product> GetCatById(int id)
-        {
-            return _productDal.GetAll(a=>a.CategoryId== id);
-        }
-
-        public void Update(ProductUpdateDto dto)
+         
+        public IResult Update(ProductUpdateDto dto)
         {
             var product = _productDal.GetById(dto.ProductId);
 
             if (product == null)
-                throw new Exception("Ürün bulunamadı.");
+                return new ErrorResult("Ürün bulunamadı.");
+
             if (product.IsDeleted)
-                throw new Exception("Bu ürün silinmiş, güncellenemez.");
+                return new ErrorResult("Silinmiş ürün güncellenemez.");
 
-            _mapper.Map(dto, product); 
+            _mapper.Map(dto, product);
+            product.UpdatedDate = DateTime.Now;
+
             _productDal.Update(product);
-        }
 
-        public void UpdateImages(int productId, List<string> images)
+            return new SuccessResult("Ürün güncellendi.");
+        }
+         
+        public IResult Delete(int id)
         {
-            throw new NotImplementedException();
+            var product = _productDal.GetById(id);
+
+            if (product == null)
+                return new ErrorResult("Ürün bulunamadı.");
+
+            if (product.IsDeleted)
+                return new ErrorResult("Ürün zaten silinmiş.");
+
+            product.IsDeleted = true;
+            product.UpdatedDate = DateTime.Now;
+
+            _productDal.Update(product);
+
+            return new SuccessResult("Ürün silindi (soft delete).");
+        }
+         
+        public IResult Restore(int productId)
+        {
+            var product = _productDal.GetByIdWithDeleted(productId);
+
+            if (product == null)
+                return new ErrorResult("Ürün bulunamadı.");
+
+            if (!product.IsDeleted)
+                return new ErrorResult("Ürün zaten aktif.");
+
+            product.IsDeleted = false;
+            product.UpdatedDate = DateTime.Now;
+
+            _productDal.Update(product);
+
+            return new SuccessResult("Ürün geri yüklendi.");
+        }
+         
+        public IResult HardDelete(int productId)
+        {
+            var product = _productDal.GetByIdWithDeleted(productId);
+
+            if (product == null)
+                return new ErrorResult("Ürün bulunamadı.");
+
+            _productDal.HardDelete(product);
+
+            return new SuccessResult("Ürün kalıcı olarak silindi.");
+        }
+         
+        public IDataResult<List<Product>> GetAll()
+        {
+            var products = _productDal.GetAll();
+            return new SuccessDataResult<List<Product>>(products);
+        }
+         
+        public IDataResult<List<Product>> GetAllForSeller()
+        {
+            var products = _productDal.GetAllWithDeleted();
+            return new SuccessDataResult<List<Product>>(products);
+        }
+         
+        public IDataResult<Product> GetById(int id)
+        {
+            if (id <= 0)
+                return new ErrorDataResult<Product>("Geçersiz ürün ID.");
+
+            var product = _productDal.Get(p => p.Id == id && !p.IsDeleted);
+
+            if (product == null)
+                return new ErrorDataResult<Product>("Ürün bulunamadı.");
+
+            return new SuccessDataResult<Product>(product);
+        }
+         
+        public IDataResult<Product> GetByIdForSeller(int id)
+        {
+            if (id <= 0)
+                return new ErrorDataResult<Product>("Geçersiz ürün ID.");
+
+            var product = _productDal.GetByIdWithDeleted(id);
+
+            if (product == null)
+                return new ErrorDataResult<Product>("Ürün bulunamadı.");
+
+            return new SuccessDataResult<Product>(product);
+        }
+         
+        public IDataResult<List<Product>> GetCatById(int id)
+        {
+            var products = _productDal.GetAll(p => p.CategoryId == id && !p.IsDeleted);
+            return new SuccessDataResult<List<Product>>(products);
+        }
+         
+        public IDataResult<List<Product>> GetByProductName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return new ErrorDataResult<List<Product>>("Ürün adı boş olamaz.");
+
+            var products = _productDal.GetAll(p =>
+                p.PName.ToLower().Contains(name.ToLower()) && !p.IsDeleted);
+
+            return new SuccessDataResult<List<Product>>(products);
+        } 
+        public IDataResult<List<Product>> GetByStock(int minStock)
+        {
+            if (minStock < 0)
+                return new ErrorDataResult<List<Product>>("Stok negatif olamaz.");
+
+            var products = _productDal.GetAll(p =>
+                p.PStock >= minStock && !p.IsDeleted);
+
+            return new SuccessDataResult<List<Product>>(products);
+        } 
+        public IDataResult<List<Product>> GetByPriceRange(decimal minPrice, decimal maxPrice)
+        {
+            if (minPrice < 0 || maxPrice < 0)
+                return new ErrorDataResult<List<Product>>("Fiyatlar negatif olamaz.");
+
+            if (minPrice > maxPrice)
+                return new ErrorDataResult<List<Product>>("Minimum fiyat maksimumdan büyük olamaz.");
+
+            var products = _productDal.GetAll(p =>
+                p.PPrice >= minPrice &&
+                p.PPrice <= maxPrice &&
+                !p.IsDeleted);
+
+            return new SuccessDataResult<List<Product>>(products);
+        }
+         
+        public IResult UpdateImages(int productId, List<string> images)
+        {
+            return new ErrorResult("Henüz implemente edilmedi.");
         }
     }
 }
+

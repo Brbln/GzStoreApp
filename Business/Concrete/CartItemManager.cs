@@ -2,6 +2,7 @@
 using AutoMapper;
 using Business.Abstract;
 using Business.DTOs;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -118,6 +119,11 @@ namespace Business.Concrete
             }).ToList();
 
             return cartItemsDto;
+        }
+
+        public IResult Delete(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
