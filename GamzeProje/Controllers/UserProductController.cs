@@ -22,7 +22,7 @@ namespace GamzeProje.Controllers
         public IActionResult GetAll()
         {
             var products = _productService.GetAll();
-            return Ok(_mapper.Map<List<ProductDto>>(products));
+            return Ok(_mapper.Map<List<ProductDto>>(products.Data));
         }
 
         [HttpGet("{id}")]
@@ -30,28 +30,28 @@ namespace GamzeProje.Controllers
         {
             var product = _productService.GetById(id);
             if (product == null) return NotFound();
-            return Ok(_mapper.Map<ProductDto>(product));
+            return Ok(_mapper.Map<ProductDto>(product.Data));
         }
 
         [HttpGet("category/{categoryId}")]
         public IActionResult GetByCategory(int categoryId)
         {
             var products = _productService.GetCatById(categoryId);
-            return Ok(_mapper.Map<List<ProductDto>>(products));
+            return Ok(_mapper.Map<List<ProductDto>>(products.Data));
         }
 
         [HttpGet("search")]
         public IActionResult Search(string name)
         {
             var products = _productService.GetByProductName(name);
-            return Ok(_mapper.Map<List<ProductDto>>(products));
+            return Ok(_mapper.Map<List<ProductDto>>(products.Data));
         }
 
         [HttpGet("price")]
         public IActionResult GetByPrice(decimal min, decimal max)
         {
             var products = _productService.GetByPriceRange(min, max);
-            return Ok(_mapper.Map<List<ProductDto>>(products));
+            return Ok(_mapper.Map<List<ProductDto>>(products.Data));
         }
     }
 }

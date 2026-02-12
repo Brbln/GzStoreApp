@@ -25,7 +25,7 @@ namespace GamzeProje.Controllers
         public IActionResult GetAll()
         {
             var products = _productService.GetAllForSeller();
-            var dtos = _mapper.Map<List<ProductDto>>(products);
+            var dtos = _mapper.Map<List<ProductDto>>(products.Data);
             return Ok(dtos);
         }
 
@@ -36,7 +36,7 @@ namespace GamzeProje.Controllers
             if (product == null)
                 return NotFound();
 
-            var dto = _mapper.Map<ProductDto>(product);
+            var dto = _mapper.Map<ProductDto>(product.Data);
             return Ok(dto);
         }
 

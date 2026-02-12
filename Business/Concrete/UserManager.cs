@@ -13,26 +13,46 @@ public class UserManager : IUserService
         _userDal = userDal;
     }
 
-    public void Add(User user)
+    public void Add(UserCreateDto dto)
     {
-        if (_userDal.IsUNameExists(user.UserName))
+        if (_userDal.IsUNameExists(dto.UserName))
             throw new Exception("Bu kullanıcı adı zaten alınmış!");
 
-        if (_userDal.IsEmailExists(user.Email))
+        if (_userDal.IsEmailExists(dto.Email))
             throw new Exception("Bu e-posta zaten kayıtlı!");
 
-        user.PasswordHash = HashHelper.Hash(user.PasswordHash);
-        user.Cart = new Cart();
+        var user = new User
+        {
+            UserName = dto.UserName,
+            Email = dto.Email,
+            Address = dto.Address,
+            PhoneNo = dto.PhoneNo,
+            PasswordHash = HashHelper.Hash(dto.Password),
+            Cart = new Cart()
+        };
 
         _userDal.Add(user);
     }
 
-    public void Delete(User user)
+    public void Delete(int id)
     {
+        var user = _userDal.Get(u => u.Id == id);
+
+        if (user == null)
+            throw new Exception("Kullanıcı bulunamadı.");
+
         user.IsDeleted = true;
         _userDal.Update(user);
     }
+    public void HardDelete(int id)
+    {
+        var user = _userDal.Get(u => u.Id == id);
 
+        if (user == null)
+            throw new Exception("Kullanıcı bulunamadı.");
+
+        _userDal.Delete(user);
+    }
     public List<User> GetAll()
     {
         return _userDal.GetAll();
@@ -61,12 +81,7 @@ public class UserManager : IUserService
     public bool IsUNameExists(string username)
     {
         return _userDal.IsUNameExists(username);
-    }
-
-    public void Update(User user)
-    {
-        _userDal.Update(user);
-    }
+    }     
 
     public void UpdateUser(UserUpdateDto dto)
     {
@@ -91,5 +106,9 @@ public class UserManager : IUserService
         }
 
         _userDal.Update(existingUser);
+    }
+    public List<User> GetDeletedUsers()
+    {
+        return _userDal.GetDeletedUsers();
     }
 }

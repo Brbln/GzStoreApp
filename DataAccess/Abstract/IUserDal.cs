@@ -17,5 +17,6 @@ namespace DataAccess.Abstract
         User GetByUserName(string userName);
         bool IsEmailExists(string email);
         bool IsUNameExists(string uName);
+        List<User> GetDeletedUsers();
     }
 }

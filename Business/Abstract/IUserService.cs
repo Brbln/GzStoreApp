@@ -10,14 +10,15 @@ namespace Business.Abstract
 {
     public interface IUserService
     {
-        void Add(User user);
-        void Update(User user);
+        void Add(UserCreateDto dto); 
         void UpdateUser(UserUpdateDto dto);
-        void Delete(User user);
+        void Delete(int id);
+        void HardDelete(int id);
         List<User> GetAll();
         User GetById(int id);
         User GetByEmail(string email);
         User GetByUserName(string username);
+        List<User> GetDeletedUsers();
         bool IsEmailExists(string email);
         bool IsUNameExists(string username);
     }

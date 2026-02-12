@@ -27,8 +27,9 @@ namespace Business.Mapping
             CreateMap<OrderItem, OrderItemDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.PName))
                 .ReverseMap();
-            CreateMap<User, UserDto>();
-            CreateMap<User, UserCreateDto>();
+            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, UserCreateDto>().ReverseMap();
+            CreateMap<User, UserUpdateDto>().ReverseMap();
             CreateMap<Seller, SellerDto>().ReverseMap();
             CreateMap<PImage, PImageDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();

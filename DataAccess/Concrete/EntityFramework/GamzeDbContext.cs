@@ -63,8 +63,7 @@ namespace DataAccess.Concrete.EntityFramework
             modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
             modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
             modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
-            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
-
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted); 
 
             base.OnModelCreating(modelBuilder);
         }
@@ -84,5 +83,6 @@ namespace DataAccess.Concrete.EntityFramework
             Set<TEntity>().Update(entity);
             SaveChanges();
         }
+      
     }
 }

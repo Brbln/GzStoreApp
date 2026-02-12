@@ -62,14 +62,13 @@ namespace GamzeProje.Controllers
                 return BadRequest(ModelState);
 
             try
-            {
-                var user = _mapper.Map<User>(dto);
-                _userService.Add(user);
+            { 
+                _userService.Add(dto);
                 return Ok("Kullanıcı başarıyla eklendi.");
             }
             catch (Exception ex)
             {
-                return Conflict(ex.Message); // DB çakışması için 409
+                return Conflict(ex.Message);  
             }
         }
 
@@ -86,17 +85,22 @@ namespace GamzeProje.Controllers
             }
             catch (Exception ex)
             {
-                return Conflict(ex.Message); // DB çakışması için 409
+                return Conflict(ex.Message);  
             }
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var user = _userService.GetById(id);
-            if (user == null) return NotFound("Kullanıcı bulunamadı.");
-            _userService.Delete(user);
-            return Ok("Kullanıcı başarıyla silindi.");
+            try
+            {
+                _userService.Delete(id); // Soft delete
+                return Ok("Kullanıcı başarıyla silindi.");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
     }

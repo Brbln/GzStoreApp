@@ -1,5 +1,6 @@
 ﻿using DataAccess.Abstract;
 using Entities.Concrete;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,16 @@ namespace DataAccess.Concrete.EntityFramework
         {
             return GetAll(u => u.UserName.ToLower() == uName.ToLower()).Any();
         }
-       
+        public List<User> GetDeletedUsers()
+        {
+            using (var context = new GamzeDbContext())
+            {
+                return context.Users
+                    .IgnoreQueryFilters()
+                    .Where(u => u.IsDeleted)
+                    .ToList();
+            }
+        }
+
     }
 }
