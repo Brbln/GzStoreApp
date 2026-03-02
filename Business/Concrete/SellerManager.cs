@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Security;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -20,6 +21,7 @@ namespace Business.Concrete
 
         public void Add(Seller seller)
         {
+            seller.PasswordHash = HashHelper.Hash(seller.PasswordHash);
             _sellerDal.Add(seller);
         }
 
@@ -40,7 +42,24 @@ namespace Business.Concrete
 
         public void Update(Seller seller)
         {
+            if (!string.IsNullOrWhiteSpace(seller.PasswordHash))
+            {
+                seller.PasswordHash = HashHelper.Hash(seller.PasswordHash);
+            }
             _sellerDal.Update(seller);
+        }
+
+        public Seller? ValidateSeller(string email, string password)
+        {
+            var seller = _sellerDal.Get(e => e.Email == email);
+            if (seller == null) return null;
+            return VerifyPassword(password, seller.PasswordHash) ? seller : null;
+        }
+        private bool VerifyPassword(string password, string passwordHash)
+        {
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+            var hashed = Convert.ToBase64String(sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)));
+            return hashed == passwordHash;
         }
     }
 }

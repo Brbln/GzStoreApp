@@ -21,5 +21,6 @@ namespace Business.Abstract
         List<User> GetDeletedUsers();
         bool IsEmailExists(string email);
         bool IsUNameExists(string username);
+        User? ValidateUser(string email, string password);
     }
 }

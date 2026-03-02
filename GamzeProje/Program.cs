@@ -8,7 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Business.Mapping;
 using FluentValidation.AspNetCore;
 using Business.Validation;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -44,6 +46,25 @@ builder.Services.AddScoped<IPaymentService, PaymentManager>();
 builder.Services.AddScoped<ISellerService, SellerManager>();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MappingProfile>();
+});
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
 });
 
 builder.Services.AddControllers()

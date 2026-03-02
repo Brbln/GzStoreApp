@@ -14,5 +14,6 @@ namespace Business.Abstract
         public void Delete(Seller seller);
         List<Seller> GetAll();
         Seller GetById(int id);
+        Seller? ValidateSeller(string email, string password); 
     }
 }

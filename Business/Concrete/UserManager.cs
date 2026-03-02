@@ -111,4 +111,18 @@ public class UserManager : IUserService
     {
         return _userDal.GetDeletedUsers();
     }
+
+    public User? ValidateUser(string email, string password)
+    {
+        var user = _userDal.Get(u => u.Email == email);
+        if (user == null) return null;
+
+        return VerifyPassword(password, user.PasswordHash) ? user : null;
+    }
+    private bool VerifyPassword(string password, string passwordHash)
+    {
+        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        var hashed = Convert.ToBase64String(sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)));
+        return hashed == passwordHash;
+    }
 }
