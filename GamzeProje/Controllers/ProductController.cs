@@ -76,58 +76,6 @@ namespace GamzeProje.Controllers
             return Ok(dtos);
         }
 
-        [HttpPost]
-        public IActionResult Add(ProductCreateDto dto)
-        {
-            var result = _productService.Add(dto);
-
-            if (!result.Success)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
-        }
-        [HttpPut]
-        public IActionResult Update(ProductUpdateDto dto)
-        {
-            var result = _productService.Update(dto);
-
-            if (!result.Success)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
-        }
-
-        [HttpDelete("soft/{id}")]
-        public IActionResult SoftDelete(int id)
-        {
-            var result = _productService.Delete(id);
-
-            if (!result.Success)
-                return NotFound(result.Message);
-
-            return Ok(result.Message);
-        }
-        [HttpPut("restore/{id}")]
-        public IActionResult Restore(int id)
-        {
-            var result = _productService.Restore(id);
-
-            if (!result.Success)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
-        }
-
-        [HttpDelete("hard/{id}")]
-        public IActionResult HardDelete(int id)
-        {
-            var result = _productService.HardDelete(id);
-
-            if (!result.Success)
-                return NotFound(result.Message);
-
-            return Ok(result.Message);
-        }
         //[HttpPut("update-images/{productId}")]
         //public IActionResult UpdateImages(
         //  int productId,

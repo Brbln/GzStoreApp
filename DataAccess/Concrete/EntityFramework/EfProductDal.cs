@@ -28,9 +28,9 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using var context = new GamzeDbContext();
             return context.Products
+                          .IgnoreQueryFilters()
                           .Include(p => p.Category)
-                          .ToList();
-        }
+                          .ToList();}
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
         {
             using var context = new GamzeDbContext();

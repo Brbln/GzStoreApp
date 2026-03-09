@@ -113,7 +113,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>>(products);
         }
          
-        public IDataResult<List<Product>> GetAllForSeller()
+        public IDataResult<List<Product>> GetAllForAdmin()
         {
             var products = _productDal.GetAllWithDeleted();
             return new SuccessDataResult<List<Product>>(products);
@@ -132,7 +132,7 @@ namespace Business.Concrete
             return new SuccessDataResult<Product>(product);
         }
          
-        public IDataResult<Product> GetByIdForSeller(int id)
+        public IDataResult<Product> GetByIdForAdmin(int id)
         {
             if (id <= 0)
                 return new ErrorDataResult<Product>("Geçersiz ürün ID.");

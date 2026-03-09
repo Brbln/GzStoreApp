@@ -3,7 +3,8 @@ using Business.DTOs.userDto;
 using Core.Utilities.Security;
 using DataAccess.Abstract;
 using Entities.Concrete;
-
+using Core.Extensions;
+using Entities.Enums;
 public class UserManager : IUserService
 {
     private readonly IUserDal _userDal;
@@ -15,16 +16,20 @@ public class UserManager : IUserService
 
     public void Add(UserCreateDto dto)
     {
-        if (_userDal.IsUNameExists(dto.UserName))
+        var normUsname = dto.UserName.Normalize();
+        var normEmail = dto.Email.Normalize();
+
+        if (_userDal.IsUNameExists(normUsname))
             throw new Exception("Bu kullanıcı adı zaten alınmış!");
 
-        if (_userDal.IsEmailExists(dto.Email))
+        if (_userDal.IsEmailExists(normEmail))
             throw new Exception("Bu e-posta zaten kayıtlı!");
 
         var user = new User
         {
-            UserName = dto.UserName,
-            Email = dto.Email,
+            UserName = normUsname,
+            Email = normEmail,
+            Role =UserRoles.Customer,
             Address = dto.Address,
             PhoneNo = dto.PhoneNo,
             PasswordHash = HashHelper.Hash(dto.Password),
@@ -60,7 +65,7 @@ public class UserManager : IUserService
 
     public User GetByEmail(string email)
     {
-        return _userDal.Get(u => u.Email == email);
+        return _userDal.Get(u => u.Email == email.Normalize());
     }
 
     public User GetById(int id)
@@ -70,7 +75,7 @@ public class UserManager : IUserService
 
     public User GetByUserName(string username)
     {
-        return _userDal.Get(u => u.UserName == username);
+        return _userDal.Get(u => u.UserName == username.Normalize());
     }
 
     public bool IsEmailExists(string email)
@@ -89,14 +94,16 @@ public class UserManager : IUserService
         if (existingUser == null)
             throw new Exception("Kullanıcı bulunamadı.");
 
-        if (existingUser.UserName != dto.UserName && _userDal.IsUNameExists(dto.UserName))
+        var lowUsname = dto.UserName.Normalize();
+        var normEmail = dto.Email.Normalize();
+        if (existingUser.UserName != lowUsname && _userDal.IsUNameExists(lowUsname))
             throw new Exception("Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor.");
 
-        if (existingUser.Email != dto.Email && _userDal.IsEmailExists(dto.Email))
+        if (existingUser.Email != normEmail && _userDal.IsEmailExists(normEmail))
             throw new Exception("Bu email başka bir kullanıcı tarafından kullanılıyor.");
 
-        existingUser.UserName = dto.UserName;
-        existingUser.Email = dto.Email;
+        existingUser.UserName = lowUsname;
+        existingUser.Email = normEmail;
         existingUser.Address = dto.Address;
         existingUser.PhoneNo = dto.PhoneNo;
 
@@ -114,7 +121,7 @@ public class UserManager : IUserService
 
     public User? ValidateUser(string email, string password)
     {
-        var user = _userDal.Get(u => u.Email == email);
+        var user = _userDal.Get(u => u.Email == email.Normalize());
         if (user == null) return null;
 
         return VerifyPassword(password, user.PasswordHash) ? user : null;

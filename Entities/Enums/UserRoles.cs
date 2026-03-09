@@ -8,8 +8,8 @@ namespace Entities.Enums
 {
     public enum UserRoles
     {
-        Admin=1,
-        User=2,
-        Seller=3
+        Admin = 1,
+        Customer = 2,
+        Seller = 3
     }
 }

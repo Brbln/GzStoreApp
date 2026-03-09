@@ -35,11 +35,11 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPut("me")]
-        [Authorize(Roles = "User,Admin")] // Herkes kendi bilgilerini güncelleyebilir
+        [Authorize(Roles = "User,Admin")]  
         public IActionResult UpdateMe([FromBody] UserUpdateDto dto)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            dto.UserId = userId; // Herkes sadece kendi Id'sini güncelleyebilir
+            dto.UserId = userId;  
 
             try
             {

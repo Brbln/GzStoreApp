@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GamzeProje.Controllers
 {
-    [Route("api/admin/users")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class AdminUserController : ControllerBase
@@ -20,18 +20,16 @@ namespace GamzeProje.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetAll()
+        [HttpGet("users")] 
+        public IActionResult GetAllUsers()
         {
             var users = _userService.GetAll();
             var dtos = _mapper.Map<List<UserDto>>(users);
             return Ok(dtos);
         }
 
-        [HttpGet("{id}")]
-        [Authorize(Roles = "Admin")]
-        public IActionResult GetById(int id)
+        [HttpGet("users/{id}")] 
+        public IActionResult GetUserById(int id)
         {
             var user = _userService.GetById(id);
             if (user == null) return NotFound("Kullanıcı bulunamadı.");
@@ -40,7 +38,7 @@ namespace GamzeProje.Controllers
         }
 
         [HttpGet("email")]
-        public IActionResult GetByEmail([FromQuery] string email)
+        public IActionResult GetUserByEmail([FromQuery] string email)
         {
             var user = _userService.GetByEmail(email);
             if (user == null) return NotFound("Kullanıcı bulunamadı.");
@@ -58,7 +56,7 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add([FromBody] UserCreateDto dto)
+        public IActionResult AddUser([FromBody] UserCreateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -75,7 +73,7 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] UserUpdateDto dto)
+        public IActionResult UpdateUser([FromBody] UserUpdateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -92,7 +90,7 @@ namespace GamzeProje.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult UserDelete(int id)
         {
             try
             {

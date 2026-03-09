@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using Business.Abstract;
 using Business.DTOs.ProductDTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GamzeProje.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserProductController :ControllerBase
+    public class UserProductController : ControllerBase
     {
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
@@ -52,6 +53,42 @@ namespace GamzeProje.Controllers
         {
             var products = _productService.GetByPriceRange(min, max);
             return Ok(_mapper.Map<List<ProductDto>>(products.Data));
+        }
+        // Admin sadece ekleme/güncelleme/silme işlemleri yapabilir
+        [Route("api/admin/products")]
+        [ApiController]
+        [Authorize(Roles = "Admin")]
+        public class AdminProductController : ControllerBase
+        {
+            private readonly IProductService _productService;
+            private readonly IMapper _mapper;
+
+            public AdminProductController(IProductService productService, IMapper mapper)
+            {
+                _productService = productService;
+                _mapper = mapper;
+            }
+
+            [HttpPost]
+            public IActionResult Add([FromBody] ProductCreateDto dto)
+            {
+                _productService.Add(dto);
+                return Ok("Ürün başarıyla eklendi.");
+            }
+
+            [HttpPut]
+            public IActionResult Update([FromBody] ProductUpdateDto dto)
+            {
+                _productService.Update(dto);
+                return Ok("Ürün başarıyla güncellendi.");
+            }
+
+            [HttpDelete("{id}")]
+            public IActionResult Delete(int id)
+            {
+                _productService.Delete(id);
+                return Ok("Ürün başarıyla silindi.");
+            }
         }
     }
 }
