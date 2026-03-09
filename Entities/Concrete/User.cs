@@ -1,4 +1,5 @@
 ﻿using Entities.Abstract;
+using Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,6 +27,7 @@ namespace Entities.Concrete
         public string? PhoneNo { get; set; }
 
         public Cart Cart { get; set; }
+        public UserRoles Role { get; set; }
     }
 
 

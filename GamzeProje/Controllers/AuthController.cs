@@ -14,13 +14,11 @@ namespace GamzeProje.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ISellerService _sellerService;
         private readonly IConfiguration _configuration;
 
-        public AuthController(IUserService userService, ISellerService sellerService, IConfiguration configuration)
+        public AuthController(IUserService userService, IConfiguration configuration)
         {
             _userService = userService;
-            _sellerService = sellerService;
             _configuration = configuration;
         }
 
@@ -28,17 +26,11 @@ namespace GamzeProje.Controllers
         public IActionResult Login([FromBody] LoginDto dto)
         {
             var user = _userService.ValidateUser(dto.Email, dto.Password);
-            var seller = _sellerService.ValidateSeller(dto.Email, dto.Password);
 
             object loginEntity;
             string role;
 
-            if (seller != null)
-            {
-                loginEntity = seller;
-                role = "Seller";
-            }
-            else if (user != null)
+            if (user != null)
             {
                 loginEntity = user;
                 role = "User";
@@ -56,8 +48,7 @@ namespace GamzeProje.Controllers
         {
             string email = entity switch
             {
-                User u => u.Email,
-                Seller s => s.Email,
+                User u => u.Email, 
                 _ => ""
             };
 

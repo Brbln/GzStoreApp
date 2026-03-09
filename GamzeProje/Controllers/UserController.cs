@@ -2,13 +2,16 @@
 using Business.Abstract;
 using Business.DTOs.userDto;
 using Entities.Concrete;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GamzeProje.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "User,Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -20,88 +23,36 @@ namespace GamzeProje.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public IActionResult GetAll()
+        [HttpGet("me")]
+        [Authorize(Roles = "User,Admin")]  
+        public IActionResult GetMe()
         {
-            var users = _userService.GetAll();
-            var dtos = _mapper.Map<List<UserDto>>(users);
-            return Ok(dtos);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var user = _userService.GetById(id);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var user = _userService.GetById(userId);
             if (user == null) return NotFound("Kullanıcı bulunamadı.");
             var dto = _mapper.Map<UserDto>(user);
             return Ok(dto);
         }
 
-        [HttpGet("email")]
-        public IActionResult GetByEmail([FromQuery] string email)
+        [HttpPut("me")]
+        [Authorize(Roles = "User,Admin")] // Herkes kendi bilgilerini güncelleyebilir
+        public IActionResult UpdateMe([FromBody] UserUpdateDto dto)
         {
-            var user = _userService.GetByEmail(email);
-            if (user == null) return NotFound("Kullanıcı bulunamadı.");
-            var dto = _mapper.Map<UserDto>(user);
-            return Ok(dto);
-        }
-
-        [HttpGet("username")]
-        public IActionResult GetByUserName([FromQuery] string username)
-        {
-            var user = _userService.GetByUserName(username);
-            if (user == null) return NotFound("Kullanıcı bulunamadı.");
-            var dto = _mapper.Map<UserDto>(user);
-            return Ok(dto);
-        }
-
-        [HttpPost]
-        public IActionResult Add([FromBody] UserCreateDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            try
-            { 
-                _userService.Add(dto);
-                return Ok("Kullanıcı başarıyla eklendi.");
-            }
-            catch (Exception ex)
-            {
-                return Conflict(ex.Message);  
-            }
-        }
-
-        [HttpPut]
-        public IActionResult Update([FromBody] UserUpdateDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            dto.UserId = userId; // Herkes sadece kendi Id'sini güncelleyebilir
 
             try
             {
                 _userService.UpdateUser(dto);
-                return Ok("Kullanıcı başarıyla güncellendi.");
+                return Ok("Kullanıcı bilgileri başarıyla güncellendi.");
             }
             catch (Exception ex)
             {
-                return Conflict(ex.Message);  
+                return Conflict(ex.Message);
             }
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            try
-            {
-                _userService.Delete(id); // Soft delete
-                return Ok("Kullanıcı başarıyla silindi.");
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
-        }
+
 
     }
 }

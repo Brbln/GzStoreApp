@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Business.Abstract;
-using Business.DTOs;
 using Business.DTOs.userDto;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GamzeProje.Controllers
@@ -10,24 +8,15 @@ namespace GamzeProje.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class SellerController : ControllerBase
-    {
-        private readonly ISellerService _sellerService;
+    { 
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
-        public SellerController(ISellerService sellerService, IMapper mapper, IUserService userService)
-        {
-            _sellerService = sellerService;
+        public SellerController(  IMapper mapper, IUserService userService)
+        { 
             _userService = userService;
             _mapper = mapper;
-        }
-        [HttpGet]
-        public IActionResult GetSeller()
-        {
-            var seller = _sellerService.GetById(1);
-            if (seller == null) return NotFound();
-            return Ok(_mapper.Map<SellerDto>(seller));
-        }
+        } 
 
         [HttpGet("users/deleted")]
         public IActionResult GetDeletedUsers()

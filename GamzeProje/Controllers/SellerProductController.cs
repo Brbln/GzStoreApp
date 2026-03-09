@@ -1,17 +1,13 @@
 ﻿using AutoMapper;
 using Business.Abstract;
 using Business.DTOs.ProductDTOs;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GamzeProje.Controllers
 {
-    [Route("api/seller/products")]
-    [ApiController]
-    // [Authorize(Roles = "Seller")]
-    public class SellerProductController : ControllerBase
-
+    public class SellerProductController : Controller
     {
+
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
