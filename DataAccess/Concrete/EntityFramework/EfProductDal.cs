@@ -13,7 +13,7 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public Product GetById(int id)
         {
-            return Get(u => u.Id == id && !u.IsDeleted);
+            return Get(u => u.Id == id);
         }
 
         public Product GetByIdWithDeleted(int id)
@@ -35,7 +35,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using var context = new GamzeDbContext();
             return context.Products
-                          .Where(p => !p.IsDeleted && p.PPrice >= minPrice && p.PPrice <= maxPrice)
+                          .Where(p => p.PPrice >= minPrice && p.PPrice <= maxPrice)
                           .ToList();
         }
 
@@ -43,7 +43,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using var context = new GamzeDbContext();
             return context.Products
-                          .Where(p => !p.IsDeleted && p.PName.ToLower().Contains(name.ToLower()))
+                          .Where(p => p.PName.ToLower().Contains(name.ToLower()))
                           .ToList();
         }
 
@@ -51,7 +51,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using var context = new GamzeDbContext();
             return context.Products
-                          .Where(p => !p.IsDeleted && p.PStock >= minStock)
+                          .Where(p => p.PStock >= minStock)
                           .ToList();
         }
 
@@ -60,7 +60,7 @@ namespace DataAccess.Concrete.EntityFramework
             using var context = new GamzeDbContext();
             return context.Products
                           .Include(p => p.Category)
-                          .Where(p => !p.IsDeleted && p.CategoryId == id)
+                          .Where(p => p.CategoryId == id)
                           .ToList();
         }
 

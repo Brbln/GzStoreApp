@@ -10,5 +10,8 @@ namespace DataAccess.Abstract
     public interface ICategoryDal : IEntityRepository<Category>
     { 
         Category GetByCategoryName(string categoryName);
+        Category GetDeletedCat(int id);
+        List<Category> GetAllWithDeleted();
+        
     }
 }

@@ -2,6 +2,7 @@
 using Business.Abstract;
 using Business.DTOs;
 using Entities.Concrete;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -30,12 +31,9 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles ="Admin")]
         public IActionResult Add([FromBody] CatCreateDto createDto) {
-             
-
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId != "1") return Forbid();   //sadece user1 ekleyebilir
-
+              
             var category = _mapper.Map<Category>(createDto);
             _categoryService.Add(category);
 
@@ -53,11 +51,9 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPut("{id}")]
+        //[Authorize(Roles ="Admin")]
         public IActionResult Update(int id, [FromBody] CatCreateDto updateDto)
-        { 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId != "1") return Forbid();  // sadece user1 güncelleyebilir
-
+        {  
             var category = _categoryService.GetById(id);
             if (category == null) return NotFound();
 
@@ -67,18 +63,36 @@ namespace GamzeProje.Controllers
             var catDto = _mapper.Map<CategoryDto>(category);
             return Ok(catDto);
         }
-         
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+
+
+        [HttpDelete("soft/{id}")]
+        //[Authorize(Roles ="Admin")]
+        public IActionResult SoftDelete(int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId != "1") return Forbid();  // sadece user1 silebilir
+            var result = _categoryService.SoftDelete(id);
+            if (!result.Success) return NotFound(result.Message);
 
-            var category = _categoryService.GetById(id);
-            if (category == null) return NotFound();
+            return Ok(result.Message);
+        }
 
-            _categoryService.Delete(category);
-            return Ok("Kategori başarıyla silindi.");
+        [HttpPut("restore/{id}")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult Restore(int id)
+        {
+            var result = _categoryService.Restore(id);
+            if (!result.Success) return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
+
+        [HttpDelete("hard/{id}")]
+        //[Authorize(Roles ="Admin")]
+        public IActionResult HardDelete(int id)
+        {
+            var result = _categoryService.HardDelete(id);
+            if (!result.Success) return NotFound(result.Message);
+
+            return Ok(result.Message);
         }
     }
 }
