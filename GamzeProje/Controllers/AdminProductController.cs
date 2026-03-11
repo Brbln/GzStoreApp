@@ -9,7 +9,7 @@ namespace GamzeProje.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin")] 
+    [Authorize(Roles = "Admin")]
     public class AdminProductController : ControllerBase
     {
 
@@ -22,24 +22,35 @@ namespace GamzeProje.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("products")]
+        [HttpGet]
         public IActionResult GetAllProduct()
         {
-            var products = _productService.GetAllForAdmin();
+            var products = _productService.GetAll();
             var dtos = _mapper.Map<List<ProductDto>>(products.Data);
             return Ok(dtos);
 
         }
 
+        [HttpGet("deletedp")]
+        public IActionResult GetDeletedProducts()
+        {
+            var result = _productService.GetDeletedProducts();
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            var dtos = _mapper.Map<List<ProductDto>>(result.Data);
+            return Ok(dtos);
+        }
         [HttpGet("{id}")]
         public IActionResult GetByProdId(int id)
         {
-            var product = _productService.GetByIdForAdmin(id);
-            if (product == null)
-                return NotFound();
+            var result = _productService.GetByIdForAdmin(id);
 
-            var dto = _mapper.Map<ProductDto>(product.Data);
-            return Ok(dto);
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            var dto = _mapper.Map<ProductDto>(result.Data);
+            return Ok(dto);          
         }
 
         [HttpPost]

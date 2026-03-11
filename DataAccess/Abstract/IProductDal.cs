@@ -13,6 +13,7 @@ namespace DataAccess.Abstract
         Product GetById(int id);
         Product GetByIdWithDeleted(int id);
         List<Product> GetAllWithDeleted();
+        List<Product> GetDeletedProducts();
         List<Product> GetCatById(int id);
         List<Product> GetByProductName(string name);
         List<Product> GetByStock(int minStock);

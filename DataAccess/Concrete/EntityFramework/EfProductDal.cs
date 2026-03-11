@@ -78,6 +78,7 @@ namespace DataAccess.Concrete.EntityFramework
             context.Products.Remove(product);
             context.SaveChanges();
         }
+
         public void UpdateImages(int productId, List<string> images)
         {
 
@@ -95,6 +96,16 @@ namespace DataAccess.Concrete.EntityFramework
 
             //context.Products.Update(product);
             //context.SaveChanges();
+        }
+
+        public List<Product> GetDeletedProducts()
+        {
+            using var context = new GamzeDbContext();
+            return context.Products
+                          .IgnoreQueryFilters()
+                          .Where(p => p.IsDeleted)
+                          .Include(p => p.Category)
+                          .ToList();
         }
     }
 }

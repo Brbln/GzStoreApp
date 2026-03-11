@@ -102,5 +102,12 @@ namespace GamzeProje.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [HttpGet("users/deleted")]
+        public IActionResult GetDeletedUsers()
+        {
+            var users = _userService.GetDeletedUsers();
+            var dtos = _mapper.Map<List<UserDto>>(users);
+            return Ok(dtos);
+        }
     }
 }

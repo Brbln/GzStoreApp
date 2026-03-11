@@ -17,8 +17,8 @@ namespace Business.Abstract
         IResult Delete(int id);          // Soft Delete
         IResult Restore(int productId);  // Restore (IsDeleted = false)
         IResult HardDelete(int productId); // Hard Delete
-         
         IDataResult<List<Product>> GetAllForAdmin();
+        IDataResult<List<Product>> GetDeletedProducts();
         IDataResult<Product> GetByIdForAdmin(int id); 
          
         IDataResult<List<Product>> GetAll();

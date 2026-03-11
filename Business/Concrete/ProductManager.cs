@@ -5,6 +5,7 @@ using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -190,6 +191,12 @@ namespace Business.Concrete
         public IResult UpdateImages(int productId, List<string> images)
         {
             return new ErrorResult("Henüz implemente edilmedi.");
+        }
+
+        public IDataResult<List<Product>> GetDeletedProducts()
+        { 
+            var products = _productDal.GetDeletedProducts();
+            return new SuccessDataResult<List<Product>>(products);
         }
     }
 }
