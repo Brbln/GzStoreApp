@@ -14,9 +14,9 @@ namespace Business.Abstract
         IResult Add(ProductCreateDto dto);
         IResult Update(ProductUpdateDto dto);
          
-        IResult Delete(int id);          // Soft Delete
-        IResult Restore(int productId);  // Restore (IsDeleted = false)
-        IResult HardDelete(int productId); // Hard Delete
+        IResult Delete(int id);           
+        IResult Restore(int productId);   
+        IResult HardDelete(int productId); 
         IDataResult<List<Product>> GetAllForAdmin();
         IDataResult<List<Product>> GetDeletedProducts();
         IDataResult<Product> GetByIdForAdmin(int id); 

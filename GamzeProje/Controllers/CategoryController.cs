@@ -26,7 +26,10 @@ namespace GamzeProje.Controllers
         public IActionResult GetAll()
         {
             var cat = _categoryService.GetAll();
-            var catDtos = _mapper.Map<List<CategoryDto>>(cat);
+            if(!cat.Success)
+                return BadRequest(cat.Message);
+            var categories = cat.Data ?? new List<Category>();
+            var catDtos = _mapper.Map<List<CategoryDto>>(categories);
             return Ok(catDtos);
         }
 
@@ -35,18 +38,22 @@ namespace GamzeProje.Controllers
         public IActionResult Add([FromBody] CatCreateDto createDto) {
               
             var category = _mapper.Map<Category>(createDto);
-            _categoryService.Add(category);
+           var result = _categoryService.Add(category); 
+            if(!result.Success)
+                return BadRequest(result.Message);
 
             var catDto = _mapper.Map<CategoryDto>(category);
-            return Ok(catDto);
+            return CreatedAtAction(nameof(GetById), new { id = category.Id }, catDto);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
             var cat = _categoryService.GetById(id);
-            if (cat == null) return NotFound();
-            var catDtos=_mapper.Map<CategoryDto>(cat);
+            if (!cat.Success)
+                return NotFound(cat.Message); 
+
+            var catDtos=_mapper.Map<CategoryDto>(cat.Data);
             return Ok(catDtos);
         }
 
@@ -55,12 +62,15 @@ namespace GamzeProje.Controllers
         public IActionResult Update(int id, [FromBody] CatCreateDto updateDto)
         {  
             var category = _categoryService.GetById(id);
-            if (category == null) return NotFound();
+            if(!category.Success)
+                 return NotFound(category.Message);
 
-            category.CName = updateDto.CName;
-            _categoryService.Update(category);
+            category.Data.CName = updateDto.CName;
+           var result = _categoryService.Update(category.Data);
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            var catDto = _mapper.Map<CategoryDto>(category);
+            var catDto = _mapper.Map<CategoryDto>(category.Data);
             return Ok(catDto);
         }
 
@@ -70,7 +80,11 @@ namespace GamzeProje.Controllers
         public IActionResult SoftDelete(int id)
         {
             var result = _categoryService.SoftDelete(id);
+<<<<<<< HEAD
             if (!result.Success) return NotFound(result.Message);
+=======
+            if (!result.Success) return BadRequest(result.Message);
+>>>>>>> Category ve fonksiyonlar güncellendi, soft/hard delete ve duplicate kontrol eklendi.
 
             return Ok(result.Message);
         }
@@ -90,7 +104,11 @@ namespace GamzeProje.Controllers
         public IActionResult HardDelete(int id)
         {
             var result = _categoryService.HardDelete(id);
+<<<<<<< HEAD
             if (!result.Success) return NotFound(result.Message);
+=======
+            if (!result.Success) return BadRequest(result.Message);
+>>>>>>> Category ve fonksiyonlar güncellendi, soft/hard delete ve duplicate kontrol eklendi.
 
             return Ok(result.Message);
         }
