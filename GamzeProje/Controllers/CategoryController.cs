@@ -29,7 +29,7 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin")]
         public IActionResult Add([FromBody] CatCreateDto createDto)
         {
             var category = _mapper.Map<Category>(createDto);
@@ -39,6 +39,7 @@ namespace GamzeProje.Controllers
             return CreatedAtAction(nameof(GetById),
                 new { id = category.Id }, catDto);
         }
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -47,8 +48,9 @@ namespace GamzeProje.Controllers
             var catDtos = _mapper.Map<CategoryDto>(cat.Data);
             return Ok(catDtos);
         }
+
         [HttpPut("{id}")]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin")]
         public IActionResult Update(int id, [FromBody] CatCreateDto updateDto)
         {
             var category = _categoryService.GetById(id);
@@ -59,6 +61,7 @@ namespace GamzeProje.Controllers
             var catDto = _mapper.Map<CategoryDto>(category.Data);
             return Ok(catDto);
         }
+
         [HttpDelete("soft/{id}")]
         [Authorize(Roles = "Admin")]
         public IActionResult SoftDelete(int id)
@@ -68,8 +71,9 @@ namespace GamzeProje.Controllers
                 return BadRequest(result.Message);
             return Ok(result.Message);
         }
+
         [HttpPut("restore/{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Restore(int id)
         {
             var result = _categoryService.Restore(id);
@@ -77,8 +81,9 @@ namespace GamzeProje.Controllers
                 return BadRequest(result.Message);
             return Ok(result.Message);
         }
+
         [HttpDelete("hard/{id}")]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin")]
         public IActionResult HardDelete(int id)
         {
             var result = _categoryService.HardDelete(id);
