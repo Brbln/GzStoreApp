@@ -29,8 +29,8 @@ namespace GamzeProje.Controllers
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var user = _userService.GetById(userId);
-            if (user == null) return NotFound("Kullanıcı bulunamadı.");
-            var dto = _mapper.Map<UserDto>(user);
+            if (!user.Success) return BadRequest(user.Message);
+            var dto = _mapper.Map<UserDto>(user.Data);
             return Ok(dto);
         }
 
@@ -40,18 +40,10 @@ namespace GamzeProje.Controllers
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             dto.UserId = userId;  
+            var result= _userService.UpdateUser(dto);
+            return result.Success ? Ok(result.Message): BadRequest(result.Message);
 
-            try
-            {
-                _userService.UpdateUser(dto);
-                return Ok("Kullanıcı bilgileri başarıyla güncellendi.");
-            }
-            catch (Exception ex)
-            {
-                return Conflict(ex.Message);
-            }
         }
-
 
 
     }

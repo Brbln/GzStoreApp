@@ -5,6 +5,7 @@ using DataAccess.Abstract;
 using Entities.Concrete;
 using Core.Extensions;
 using Entities.Enums;
+using Core.Utilities.Results;
 public class UserManager : IUserService
 {
     private readonly IUserDal _userDal;
@@ -14,22 +15,22 @@ public class UserManager : IUserService
         _userDal = userDal;
     }
 
-    public void Add(UserCreateDto dto)
+    public IResult Add(UserCreateDto dto)
     {
-        var normUsname = dto.UserName.Normalize();
-        var normEmail = dto.Email.Normalize();
+        var normUsname = dto.UserName.Trim().ToLowerInvariant();
+        var normEmail = dto.Email.Trim().ToLowerInvariant();
 
         if (_userDal.IsUNameExists(normUsname))
-            throw new Exception("Bu kullanıcı adı zaten alınmış!");
+            return new ErrorResult("Bu kullanıcı adı zaten alınmış!");
 
         if (_userDal.IsEmailExists(normEmail))
-            throw new Exception("Bu e-posta zaten kayıtlı!");
+            return new ErrorResult("Bu e-posta zaten kayıtlı!");
 
         var user = new User
         {
             UserName = normUsname,
             Email = normEmail,
-            Role =UserRoles.Customer,
+            Role = UserRoles.Customer,
             Address = dto.Address,
             PhoneNo = dto.PhoneNo,
             PasswordHash = HashHelper.Hash(dto.Password),
@@ -37,70 +38,77 @@ public class UserManager : IUserService
         };
 
         _userDal.Add(user);
+        return new SuccessResult("Kullanıcı başarıyla eklendi.");
     }
 
-    public void Delete(int id)
+    public IResult Delete(int id)
     {
         var user = _userDal.Get(u => u.Id == id);
-
         if (user == null)
-            throw new Exception("Kullanıcı bulunamadı.");
+            return new ErrorResult("Kullanıcı bulunamadı.");
 
         user.IsDeleted = true;
         _userDal.Update(user);
+        return new SuccessResult("Kullanıcı soft delete ile silindi.");
     }
-    public void HardDelete(int id)
+    public IResult HardDelete(int id)
     {
         var user = _userDal.Get(u => u.Id == id);
 
         if (user == null)
-            throw new Exception("Kullanıcı bulunamadı.");
+            return new ErrorResult("Kullanıcı bulunamadı.");
 
         _userDal.Delete(user);
+        return new SuccessResult("Kullanıcı kalıcı olarak silindi.");
     }
-    public List<User> GetAll()
+    public IDataResult<List<User>> GetAll()
     {
-        return _userDal.GetAll();
-    }
-
-    public User GetByEmail(string email)
-    {
-        return _userDal.Get(u => u.Email == email.Normalize());
+        var users = _userDal.GetAll();
+        return new SuccessDataResult<List<User>>(users);
     }
 
-    public User GetById(int id)
+    public IDataResult<User> GetByEmail(string email)
     {
-        return _userDal.Get(u => u.Id == id);
+        var user = _userDal.Get(u => u.Email == email.Trim().ToLowerInvariant());
+        return user != null
+            ? new SuccessDataResult<User>(user)
+            : new ErrorDataResult<User>("Kullanıcı bulunamadı.");
     }
 
-    public User GetByUserName(string username)
+    public IDataResult<User> GetById(int id)
     {
-        return _userDal.Get(u => u.UserName == username.Normalize());
+        var user = _userDal.Get(u => u.Id == id);
+        return user != null
+            ? new SuccessDataResult<User>(user)
+            : new ErrorDataResult<User>("Kullanıcı bulunamadı.");
+
     }
 
-    public bool IsEmailExists(string email)
+    public IDataResult<User> GetByUserName(string username)
     {
-        return _userDal.IsEmailExists(email);
+        var user = _userDal.Get(u => u.UserName == username.Trim().ToLowerInvariant());
+        return user != null
+            ? new SuccessDataResult<User>(user)
+            : new ErrorDataResult<User>("Kullanıcı bulunamadı.");
     }
 
-    public bool IsUNameExists(string username)
-    {
-        return _userDal.IsUNameExists(username);
-    }     
+    public bool IsEmailExists(string email) => _userDal.IsEmailExists(email.Trim().ToLowerInvariant());
 
-    public void UpdateUser(UserUpdateDto dto)
+    public bool IsUNameExists(string username) => _userDal.IsUNameExists(username.Trim().ToLowerInvariant());
+
+    public IResult UpdateUser(UserUpdateDto dto)
     {
         var existingUser = _userDal.Get(u => u.Id == dto.UserId);
         if (existingUser == null)
-            throw new Exception("Kullanıcı bulunamadı.");
+            return new ErrorResult("Kullanıcı bulunamadı.");
 
-        var lowUsname = dto.UserName.Normalize();
-        var normEmail = dto.Email.Normalize();
+        var lowUsname = dto.UserName.Trim().ToLowerInvariant();
+        var normEmail = dto.Email.Trim().ToLowerInvariant();
         if (existingUser.UserName != lowUsname && _userDal.IsUNameExists(lowUsname))
-            throw new Exception("Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor.");
+            return new ErrorResult("Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor.");
 
         if (existingUser.Email != normEmail && _userDal.IsEmailExists(normEmail))
-            throw new Exception("Bu email başka bir kullanıcı tarafından kullanılıyor.");
+            return new ErrorResult("Bu email başka bir kullanıcı tarafından kullanılıyor.");
 
         existingUser.UserName = lowUsname;
         existingUser.Email = normEmail;
@@ -113,18 +121,23 @@ public class UserManager : IUserService
         }
 
         _userDal.Update(existingUser);
+        return new SuccessResult("Kullanıcı başarıyla güncellendi.");
     }
-    public List<User> GetDeletedUsers()
+    public IDataResult<List<User>> GetDeletedUsers()
     {
-        return _userDal.GetDeletedUsers();
+        var users = _userDal.GetDeletedUsers();
+        return new SuccessDataResult<List<User>>(users);
     }
 
-    public User? ValidateUser(string email, string password)
+    public IDataResult<User>? ValidateUser(string email, string password)
     {
-        var user = _userDal.Get(u => u.Email == email.Normalize());
-        if (user == null) return null;
+        var user = _userDal.Get(u => u.Email == email.Trim().ToLowerInvariant());
+        if (user == null)
+            return new ErrorDataResult<User>("Geçersiz e-posta veya şifre.");
 
-        return VerifyPassword(password, user.PasswordHash) ? user : null;
+        return VerifyPassword(password, user.PasswordHash)
+            ? new SuccessDataResult<User>(user)
+            : new ErrorDataResult<User>("Geçersiz e-posta veya şifre.");
     }
     private bool VerifyPassword(string password, string passwordHash)
     {

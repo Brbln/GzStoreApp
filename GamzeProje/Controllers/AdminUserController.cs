@@ -24,7 +24,9 @@ namespace GamzeProje.Controllers
         public IActionResult GetAllUsers()
         {
             var users = _userService.GetAll();
-            var dtos = _mapper.Map<List<UserDto>>(users);
+            if (!users.Success)
+                return BadRequest(users.Message);
+            var dtos = _mapper.Map<List<UserDto>>(users.Data);
             return Ok(dtos);
         }
 
@@ -32,8 +34,9 @@ namespace GamzeProje.Controllers
         public IActionResult GetUserById(int id)
         {
             var user = _userService.GetById(id);
-            if (user == null) return NotFound("Kullanıcı bulunamadı.");
-            var dto = _mapper.Map<UserDto>(user);
+            if (!user.Success)
+                return NotFound(user.Message);
+            var dto = _mapper.Map<UserDto>(user.Data);
             return Ok(dto);
         }
 
@@ -41,8 +44,9 @@ namespace GamzeProje.Controllers
         public IActionResult GetUserByEmail([FromQuery] string email)
         {
             var user = _userService.GetByEmail(email);
-            if (user == null) return NotFound("Kullanıcı bulunamadı.");
-            var dto = _mapper.Map<UserDto>(user);
+            if (!user.Success)
+                return NotFound(user.Message);
+            var dto = _mapper.Map<UserDto>(user.Data);
             return Ok(dto);
         }
 
@@ -50,8 +54,8 @@ namespace GamzeProje.Controllers
         public IActionResult GetByUserName([FromQuery] string username)
         {
             var user = _userService.GetByUserName(username);
-            if (user == null) return NotFound("Kullanıcı bulunamadı.");
-            var dto = _mapper.Map<UserDto>(user);
+            if (!user.Success) return NotFound(user.Message);
+            var dto = _mapper.Map<UserDto>(user.Data);
             return Ok(dto);
         }
 
@@ -61,15 +65,10 @@ namespace GamzeProje.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                _userService.Add(dto);
-                return Ok("Kullanıcı başarıyla eklendi.");
-            }
-            catch (Exception ex)
-            {
-                return Conflict(ex.Message);
-            }
+            var result = _userService.Add(dto);
+            if (!result.Success) return Conflict(result.Message);
+
+            return Ok(result.Message);
         }
 
         [HttpPut]
@@ -78,35 +77,27 @@ namespace GamzeProje.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                _userService.UpdateUser(dto);
-                return Ok("Kullanıcı başarıyla güncellendi.");
-            }
-            catch (Exception ex)
-            {
-                return Conflict(ex.Message);
-            }
+            var result = _userService.UpdateUser(dto);
+            if (!result.Success) return Conflict(result.Message);
+
+            return Ok(result.Message);
         }
 
         [HttpDelete("{id}")]
         public IActionResult UserDelete(int id)
         {
-            try
-            {
-                _userService.Delete(id); // Soft delete
-                return Ok("Kullanıcı başarıyla silindi.");
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            var result = _userService.Delete(id);
+            if (!result.Success) return NotFound(result.Message);
+
+            return Ok(result.Message);
         }
         [HttpGet("users/deleted")]
         public IActionResult GetDeletedUsers()
         {
             var users = _userService.GetDeletedUsers();
-            var dtos = _mapper.Map<List<UserDto>>(users);
+            if (!users.Success)
+                return BadRequest(users.Message);
+            var dtos = _mapper.Map<List<UserDto>>(users.Data);
             return Ok(dtos);
         }
     }
