@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Business.Abstract;
-using Business.DTOs; 
+using Business.DTOs;
+using Business.DTOs.CartDTOs;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace WebAPI.Controllers
 
         // Sepete ürün ekleme
         [HttpPost]
-        public IActionResult Add([FromBody] AddCartItemDto addDto)
+        public IActionResult Add([FromBody] AddCartDto addDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

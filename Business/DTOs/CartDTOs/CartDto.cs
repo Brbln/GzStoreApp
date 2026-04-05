@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Business.DTOs
+namespace Business.DTOs.CartDTOs
 {
     public class CartDto
     {
         public int CartId { get; set; } 
         public List<CartItemDto> Items { get; set; } = new List<CartItemDto>();
         public decimal TotalAmount => Items.Sum(i => i.TotalPrice);
-    }
+    }   
 }

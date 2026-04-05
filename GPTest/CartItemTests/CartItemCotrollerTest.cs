@@ -8,6 +8,7 @@ using Entities.Concrete;
 using GamzeProje.Controllers;
 using System.Collections.Generic;
 using WebAPI.Controllers;
+using Business.DTOs.CartDTOs;
 
 namespace GPTest.CartItemTests
 {
@@ -55,7 +56,7 @@ namespace GPTest.CartItemTests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var cartDto = Assert.IsType<Business.DTOs.CartDto>(okResult.Value);
+            var cartDto = Assert.IsType<CartDto>(okResult.Value);
             Assert.Equal(cartId, cartDto.CartId);
             Assert.Equal(20, cartDto.TotalAmount); // 2*10 = 20
         }
