@@ -9,8 +9,11 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfUserDal : EfRepositoryBase<User, GamzeDbContext>, IUserDal
+    public class EfUserDal : EfRepositoryBase<User>, IUserDal
     {
+        public EfUserDal(GamzeDbContext context) : base(context)
+        {
+        }
 
         public User GetById(int id)
         {
@@ -36,13 +39,11 @@ namespace DataAccess.Concrete.EntityFramework
         }
         public List<User> GetDeletedUsers()
         {
-            using (var context = new GamzeDbContext())
-            {
-                return context.Users
+                return _context.Users
                     .IgnoreQueryFilters()
                     .Where(u => u.IsDeleted)
                     .ToList();
-            }
+            
         }
 
     }

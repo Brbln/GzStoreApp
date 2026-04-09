@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfPImageDal : EfRepositoryBase<PImage, GamzeDbContext>, IPImageDal
+    public class EfPImageDal : EfRepositoryBase<PImage>, IPImageDal
     {
+        public EfPImageDal(GamzeDbContext context) : base(context)
+        {
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DataAccess.Abstract;
 using Entities.Concrete;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,24 +9,31 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfCartItemDal : EfRepositoryBase<CartItem, GamzeDbContext>, ICartItemDal
+    public class EfCartItemDal : EfRepositoryBase<CartItem>, ICartItemDal
     {
+        public EfCartItemDal(GamzeDbContext context) : base(context)
+        {
+        }
+
         public CartItem GetByCartAndProduct(int cartId, int productId)
         {
-            using var context = new GamzeDbContext();
-            return context.CartItems.FirstOrDefault(c => c.CartId == cartId && c.ProductId == productId);
+            return _context.CartItems
+                .Include(c=>c.Product).
+                FirstOrDefault(c => c.CartId == cartId && c.ProductId == productId);
         }
 
         public List<CartItem> GetByCartId(int cartId)
         {
-            using var context = new GamzeDbContext();
-            return context.CartItems.Where(c => c.CartId == cartId).ToList();
+            return _context.CartItems
+                .Include(c=>c.Product)
+                .Where(c => c.CartId == cartId).ToList();
         }
 
         public List<CartItem> GetByProductId(int productId)
         {
-            using var context = new GamzeDbContext();
-            return context.CartItems.Where(c => c.ProductId == productId).ToList();
+            return _context.CartItems
+                .Include(c=> c.Product)
+                .Where(c => c.ProductId == productId).ToList();
         }
     }
 }

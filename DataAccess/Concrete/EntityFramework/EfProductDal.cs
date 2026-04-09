@@ -9,8 +9,12 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfProductDal : EfRepositoryBase<Product, GamzeDbContext>, IProductDal
+    public class EfProductDal : EfRepositoryBase<Product>, IProductDal
     {
+        public EfProductDal(GamzeDbContext context) : base(context)
+        {
+        }
+
         public Product GetById(int id)
         {
             return Get(u => u.Id == id);
