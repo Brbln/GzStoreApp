@@ -26,34 +26,39 @@ namespace Business.Concrete
             _mapper = mapper;
             _productDal = productDal;
             _cartDal = cartDal;
-        }         
-
-        public void Add(CartItem cart)
-        {
-            if (_productDal.Get(p => p.Id == cart.ProductId) == null)
-                throw new InvalidOperationException("Ürün bulunamadı.");
-
-            if (_cartDal.Get(c => c.Id == cart.CartId) == null)
-                throw new InvalidOperationException("Sepet bulunamadı.");
-
-            if (cart.Quantity <= 0)
-                throw new InvalidOperationException("Miktar 1’den küçük olamaz.");
-
-            _cItemDal.Add(cart);
         }
 
-        public void AddOrUpdate(CartItem cart)
+        public IResult Add(CartItem cart)
         {
             if (_productDal.Get(p => p.Id == cart.ProductId) == null)
-                throw new InvalidOperationException("Ürün bulunamadı.");
+                return new ErrorResult("Ürün bulunamadı.");
 
             if (_cartDal.Get(c => c.Id == cart.CartId) == null)
-                throw new InvalidOperationException("Sepet bulunamadı.");
+                return new ErrorResult("Sepet bulunamadı.");
 
             if (cart.Quantity <= 0)
-                throw new InvalidOperationException("Miktar 1’den küçük olamaz.");
+                return new ErrorResult("Miktar 1’den küçük olamaz.");
 
-            var existing = _cItemDal.Get(c => c.CartId == cart.CartId && c.ProductId == cart.ProductId);
+            _cItemDal.Add(cart);
+
+            return new SuccessResult("Ürün sepete eklendi.");
+        }
+
+        public IResult AddOrUpdate(CartItem cart)
+        {
+            if (_productDal.Get(p => p.Id == cart.ProductId) == null)
+                return new ErrorResult("Ürün bulunamadı.");
+
+            if (_cartDal.Get(c => c.Id == cart.CartId) == null)
+                return new ErrorResult("Sepet bulunamadı.");
+
+            if (cart.Quantity <= 0)
+                return new ErrorResult("Miktar 1’den küçük olamaz.");
+
+            var existing = _cItemDal.Get(c =>
+                c.CartId == cart.CartId &&
+                c.ProductId == cart.ProductId);
+
             if (existing != null)
             {
                 existing.Quantity += cart.Quantity;
@@ -67,63 +72,86 @@ namespace Business.Concrete
             {
                 _cItemDal.Add(cart);
             }
+
+            return new SuccessResult("Sepet güncellendi.");
         }
 
-        public void Delete(CartItem cart)
+        public IDataResult<CartItem> GetByCartAndProduct(int cartId, int productId)
         {
-            _cItemDal.Delete(cart);
+            var item = _cItemDal.Get(a => a.CartId == cartId && a.ProductId == productId);
+
+            if (item == null)
+                return new ErrorDataResult<CartItem>("Sepette ürün bulunamadı.");
+
+            return new SuccessDataResult<CartItem>(item);
         }
 
-        public CartItem GetByCartAndProduct(int cartId, int productId)
+        public IDataResult<List<CartItem>> GetByCartId(int cartId)
         {
-            return _cItemDal.Get(a => a.CartId == cartId && a.ProductId == productId);
+            var items = _cItemDal.GetAll(a => a.CartId == cartId);
+
+            return new SuccessDataResult<List<CartItem>>(items);
         }
 
-        public List<CartItem> GetByCartId(int cartId)
+        public IDataResult<CartItem> GetById(int id)
         {
-            return _cItemDal.GetAll(a => a.CartId == cartId);
+            var item = _cItemDal.Get(a => a.Id == id);
+
+            if (item == null)
+                return new ErrorDataResult<CartItem>("Ürün bulunamadı.");
+
+            return new SuccessDataResult<CartItem>(item);
         }
 
-        public CartItem GetById(int id)
-        {
-            return _cItemDal.Get(a => a.Id == id);
-        }
-
-        public void Update(CartItem cart)
+        public IResult Update(CartItem cart)
         {
             var existingItem = _cItemDal.Get(c => c.Id == cart.Id);
+
             if (existingItem == null)
-                throw new InvalidOperationException("Sepetinizde bu ürün bulunamadığı için güncellenemedi.");
+                return new ErrorResult("Sepette ürün bulunamadı.");
 
             if (cart.Quantity <= 0)
             {
                 _cItemDal.Delete(existingItem);
+                return new SuccessResult("Ürün sepetten kaldırıldı.");
             }
-            else
-            {
-                existingItem.Quantity = cart.Quantity;
-                _cItemDal.Update(existingItem);
-            }
+
+            existingItem.Quantity = cart.Quantity;
+            _cItemDal.Update(existingItem);
+
+            return new SuccessResult("Ürün miktarı güncellendi.");
         }
 
-        public List<CartItemDto> GetCartItemsDto(int cartId)
+        public IDataResult<List<CartItemDto>> GetCartItemsDto(int cartId)
         {
-            var cartItems = _cItemDal.GetAll(ci => ci.CartId == cartId).ToList();
+            var cartItems = _cItemDal.GetAllWithProduct(ci => ci.CartId == cartId);
 
-            var cartItemsDto = cartItems.Select(ci => new CartItemDto
-            {
-                CartItemId = ci.Id,
-                Quantity = ci.Quantity,
-                ProductName = ci.Product?.PName,
-                UnitPrice = ci.Product?.PPrice ?? 0
-            }).ToList();
+            var dto = _mapper.Map<List<CartItemDto>>(cartItems);
 
-            return cartItemsDto;
+            return new SuccessDataResult<List<CartItemDto>>(dto);
         }
 
         public IResult Delete(int id)
         {
-            throw new NotImplementedException();
+            var cartItem = _cItemDal.Get(c => c.Id == id);
+
+            if (cartItem == null)
+                return new ErrorResult("Silinecek ürün bulunamadı.");
+
+            _cItemDal.Delete(cartItem);
+
+            return new SuccessResult("Ürün sepetten silindi.");
+        }
+        public IResult ClearCart(int cartId)
+        {
+            var items = _cItemDal.GetByCartId(cartId);
+
+            foreach (var item in items)
+            {
+                _cItemDal.Delete(item);
+            }
+
+            return new SuccessResult("Sepet temizlendi.");
         }
     }
 }

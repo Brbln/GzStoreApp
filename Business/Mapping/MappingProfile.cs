@@ -6,7 +6,7 @@ using Business.DTOs.userDto;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
-using System.Linq; 
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Business.Mapping
@@ -17,11 +17,10 @@ namespace Business.Mapping
         public MappingProfile()
         {
             CreateMap<AddCartItemDto, CartItem>()
-         .ForMember(dest => dest.Id, opt => opt.Ignore())
-         .ForMember(dest => dest.Product, opt => opt.Ignore());  
-
-            CreateMap<Cart, CartDto>().ReverseMap();
-            CreateMap<Product, ProductDto>(); 
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Product, opt => opt.Ignore())
+                .ForMember(dest => dest.Cart, opt => opt.Ignore());
+            CreateMap<Product, ProductDto>();
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductUpdateDto, Product>();
             CreateMap<Order, OrderDto>().ReverseMap();
@@ -34,6 +33,18 @@ namespace Business.Mapping
             CreateMap<PImage, PImageDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Category, CatCreateDto>().ReverseMap();
+            CreateMap<CartItem, CartItemDto>()
+                .ForMember(dest => dest.CartItemId,
+                 opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.ProductName,
+                 opt => opt.MapFrom(src => src.Product.PName))
+                .ForMember(dest => dest.UnitPrice,
+                opt => opt.MapFrom(src => src.Product.PPrice))
+                .ForMember(dest => dest.Quantity,
+                opt => opt.MapFrom(src => src.Quantity))
+                .ForMember(dest => dest.TotalPrice,
+                opt => opt.MapFrom(src => src.Quantity * src.Product.PPrice));
+            CreateMap<Cart, CartDto>().ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.CartItems)).ReverseMap();
         }
     }
 }

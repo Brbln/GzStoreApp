@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
@@ -19,38 +20,49 @@ namespace Business.Concrete
             _cartDal = cartDal;
         }
 
-        public void Add(Cart cart)
+        public IResult Add(Cart cart)
         {
             _cartDal.Add(cart);
+            return new SuccessResult("Sepet başarıyla oluşturuldu");
         }
 
-        public void Delete(Cart cart)
+        public IResult Delete(Cart cart)
         {
             _cartDal.Delete(cart);
+            return new SuccessResult("Sepet silindi.");
         }
 
-        public List<Cart> GetAll()
+        public IDataResult<List<Cart>> GetAll()
         {
-            return _cartDal.GetAll();
+            var carts = _cartDal.GetAll();
+            return new SuccessDataResult<List<Cart>>(carts);
         }
-         
-        public Cart GetById(int id)
+
+        public IDataResult<Cart> GetById(int id)
         {
-            return _cartDal.Get(a => a.Id == id);
+            var cart = _cartDal.Get(a => a.Id == id);
 
+            if (cart == null)
+                return new ErrorDataResult<Cart>("Sepet bulunamadı.");
+
+            return new SuccessDataResult<Cart>(cart);
         }
 
-        public Cart GetByUserId(int userId)
+        public IDataResult<Cart> GetByUserId(int userId)
         {
-            using var context = new GamzeDbContext();
-            return context.Carts
-                       .Include(c => c.User)
-                       .FirstOrDefault(c => c.UserId == userId);
+            var cart = _cartDal.Get(c => c.UserId == userId);
+
+            if (cart == null)
+                return new ErrorDataResult<Cart>("Sepet bulunamadı.");
+
+            return new SuccessDataResult<Cart>(cart);
         }
 
-        public void Update(Cart cart)
+        public IResult Update(Cart cart)
         {
             _cartDal.Update(cart);
+            return new SuccessResult("Sepet güncellendi.");
         }
     }
 }
+

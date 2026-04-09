@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Core.Utilities.Results;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,11 @@ namespace Business.Abstract
 {
     public interface ICartService
     {
-        public void Add(Cart cart);
-        public void Update(Cart cart);
-        public void Delete(Cart cart);
-        public List<Cart> GetAll();
-        Cart GetById(int id);
-        Cart GetByUserId(int userId); 
+        IResult Add(Cart cart);
+        IResult Update(Cart cart);
+        IResult Delete(Cart cart);
+        IDataResult<List<Cart>> GetAll();
+        IDataResult<Cart> GetById(int id);
+        IDataResult<Cart> GetByUserId(int userId);
     }
 }

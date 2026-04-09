@@ -12,6 +12,8 @@ namespace GamzeProje.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "User,Admin")]
+
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;

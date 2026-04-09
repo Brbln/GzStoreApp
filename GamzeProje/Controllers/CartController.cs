@@ -3,10 +3,11 @@ using Business.DTOs.CartDTOs;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize] // Sadece giriş yapmış kullanıcılar
+[Authorize]
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;
@@ -18,71 +19,87 @@ public class CartController : ControllerBase
         _cartItemService = cartItemService;
     }
 
-    // GET: api/cart/my-cart
     [HttpGet("my-cart")]
     public ActionResult<CartDto> GetMyCart()
     {
-        var userId = int.Parse(User.FindFirst("Id").Value); 
-        var cart = _cartService.GetByUserId(userId);
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        if (cart == null)
-            return NotFound("Sepet bulunamadı.");
+        var cartResult = _cartService.GetByUserId(userId);
 
-        var itemsDto = _cartItemService.GetCartItemsDto(cart.Id);
+        if (!cartResult.Success)
+            return NotFound(cartResult.Message);
 
-        var cartDto = new CartDto
+        var items = _cartItemService.GetCartItemsDto(cartResult.Data.Id);
+
+        return Ok(new CartDto
         {
-            CartId = cart.Id,
-            Items = itemsDto
-        };
-
-        return Ok(cartDto);
+            CartId = cartResult.Data.Id,
+            Items = items.Data
+        });
     }
 
-    // POST: api/cart/add
     [HttpPost("add")]
     public IActionResult AddToCart([FromBody] AddCartDto dto)
     {
-        var userId = int.Parse(User.FindFirst("Id").Value);
-        var cart = _cartService.GetByUserId(userId);
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        if (cart == null)
+        if (dto.Quantity <= 0)
+            return BadRequest("Miktar 0'dan büyük olmalıdır.");
+
+        var cartResult = _cartService.GetByUserId(userId);
+
+        if (!cartResult.Success || cartResult.Data == null)
+            return NotFound(cartResult.Message);
+
+        var cart = cartResult.Data;
+
+        var itemResult =
+            _cartItemService.GetByCartAndProduct(cart.Id, dto.ProductId);
+
+        var existingItem = itemResult.Success ? itemResult.Data : null;
+
+        if (existingItem != null)
         {
-            cart = new Cart { UserId = userId };
-            _cartService.Add(cart);
+            existingItem.Quantity += dto.Quantity;
+
+            var updateResult = _cartItemService.Update(existingItem);
+
+            if (!updateResult.Success)
+                return BadRequest(updateResult.Message);
         }
-
-        var cartItem = new CartItem
+        else
         {
-            CartId = cart.Id,
-            ProductId = dto.ProductId,
-            Quantity = dto.Quantity
-        };
+            var newItem = new CartItem
+            {
+                CartId = cart.Id,
+                ProductId = dto.ProductId,
+                Quantity = dto.Quantity
+            };
 
-        _cartItemService.AddOrUpdate(cartItem);
+            var addResult = _cartItemService.Add(newItem);
+
+            if (!addResult.Success)
+                return BadRequest(addResult.Message);
+        }
 
         return Ok("Ürün sepete eklendi.");
     }
 
-    // PUT: api/cart/update
-    [HttpPut("update")]
-    public IActionResult UpdateCartItem([FromBody] AddCartDto dto)
+    [HttpDelete("clear")]
+    public IActionResult ClearCart()
     {
-        var userId = int.Parse(User.FindFirst("Id").Value);
-        var cart = _cartService.GetByUserId(userId);
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        if (cart == null)
-            return NotFound("Sepet bulunamadı.");
+        var cartResult = _cartService.GetByUserId(userId);
 
-        var cartItem = new CartItem
-        {
-            CartId = cart.Id,
-            ProductId = dto.ProductId,
-            Quantity = dto.Quantity
-        };
+        if (!cartResult.Success || cartResult.Data == null)
+            return NotFound(cartResult.Message);
 
-        _cartItemService.Update(cartItem);
+        var result = _cartItemService.ClearCart(cartResult.Data.Id);
 
-        return Ok("Sepet güncellendi.");
+        if (!result.Success)
+            return BadRequest(result.Message);
+
+        return Ok("Sepet temizlendi.");
     }
 }

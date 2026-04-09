@@ -1,18 +1,21 @@
 ﻿using Business.Abstract;
 using Business.DTOs.userDto;
+using Core.Extensions;
+using Core.Utilities.Results;
 using Core.Utilities.Security;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using Core.Extensions;
 using Entities.Enums;
-using Core.Utilities.Results;
+using Microsoft.EntityFrameworkCore;
 public class UserManager : IUserService
 {
     private readonly IUserDal _userDal;
+    private readonly ICartDal _cartDal;
 
-    public UserManager(IUserDal userDal)
+    public UserManager(IUserDal userDal, ICartDal cartDal)
     {
         _userDal = userDal;
+        _cartDal = cartDal;
     }
 
     public IResult Add(UserCreateDto dto)
@@ -33,11 +36,16 @@ public class UserManager : IUserService
             Role = UserRoles.Customer,
             Address = dto.Address,
             PhoneNo = dto.PhoneNo,
-            PasswordHash = HashHelper.Hash(dto.Password),
-            Cart = new Cart()
+            PasswordHash = HashHelper.Hash(dto.Password)
         };
-
         _userDal.Add(user);
+
+        var cart = new Cart
+        {
+            UserId = user.Id,
+            CreatedDate = DateTime.Now
+        };
+        _cartDal.Add(cart);
         return new SuccessResult("Kullanıcı başarıyla eklendi.");
     }
 
@@ -128,7 +136,6 @@ public class UserManager : IUserService
         var users = _userDal.GetDeletedUsers();
         return new SuccessDataResult<List<User>>(users);
     }
-
     public IDataResult<User>? ValidateUser(string email, string password)
     {
         var user = _userDal.Get(u => u.Email == email.Trim().ToLowerInvariant());

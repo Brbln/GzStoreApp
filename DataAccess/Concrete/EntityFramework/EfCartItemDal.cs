@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,6 +35,10 @@ namespace DataAccess.Concrete.EntityFramework
             return _context.CartItems
                 .Include(c=> c.Product)
                 .Where(c => c.ProductId == productId).ToList();
+        }
+        public List<CartItem> GetAllWithProduct(Expression<Func<CartItem, bool>> filter)
+        {
+            return _context.CartItems.Include(c => c.Product).Where(filter).ToList();
         }
     }
 }
