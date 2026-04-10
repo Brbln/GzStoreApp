@@ -11,7 +11,7 @@ namespace GamzeProje.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "User,Admin")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -24,7 +24,6 @@ namespace GamzeProje.Controllers
         }
 
         [HttpGet("me")]
-        [Authorize(Roles = "User,Admin")]  
         public IActionResult GetMe()
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -35,7 +34,6 @@ namespace GamzeProje.Controllers
         }
 
         [HttpPut("me")]
-        [Authorize(Roles = "User,Admin")]  
         public IActionResult UpdateMe([FromBody] UserUpdateDto dto)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
