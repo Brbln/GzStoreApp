@@ -3,7 +3,6 @@ using Moq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Business.Abstract;
-using Business.DTOs;
 using Entities.Concrete;
 using GamzeProje.Controllers;
 using System.Collections.Generic;

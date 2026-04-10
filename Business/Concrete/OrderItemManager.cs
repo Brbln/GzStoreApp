@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -11,51 +12,44 @@ namespace Business.Concrete
 {
     public class OrderItemManager : IOrderItemService
     {
-        IOrderItemDal _oItemDal;
+        private readonly IOrderItemDal _orderItemDal;
 
-        public OrderItemManager(IOrderItemDal oItemDal)
+        public OrderItemManager(IOrderItemDal orderItemDal)
         {
-            _oItemDal = oItemDal;
+            _orderItemDal = orderItemDal;
         }
 
-        public void Add(OrderItem order)
+        public IDataResult<OrderItem> GetById(int id)
         {
-            _oItemDal.Add(order);
+            var item = _orderItemDal.Get(i => i.Id == id);
+
+            if (item == null)
+                return new ErrorDataResult<OrderItem>("OrderItem bulunamadı.");
+
+            return new SuccessDataResult<OrderItem>(item);
         }
 
-        public void Delete(OrderItem order)
+        public IDataResult<List<OrderItem>> GetByOrderId(int orderId)
         {
-            _oItemDal.Delete(order);
+            var items = _orderItemDal.GetAll(i => i.OrderId == orderId);
+            return new SuccessDataResult<List<OrderItem>>(items);
         }
 
-        public List<OrderItem> GetAll()
+        public IDataResult<List<OrderItem>> GetByProductId(int productId)
         {
-            return _oItemDal.GetAll();
+            var items = _orderItemDal.GetAll(i => i.ProductId == productId);
+            return new SuccessDataResult<List<OrderItem>>(items);
         }
 
-        public OrderItem GetById(int id)
+        public IDataResult<OrderItem> GetByOrderAndProduct(int orderId, int productId)
         {
-            return _oItemDal.Get(a => a.Id == id);
-        }
+            var item = _orderItemDal.Get(i =>
+                i.OrderId == orderId && i.ProductId == productId);
 
-        public OrderItem GetByOrderAndProduct(int orderId, int productId)
-        {
-            return _oItemDal.Get(a => a.ProductId==productId && a.OrderId==orderId);
-        }
+            if (item == null)
+                return new ErrorDataResult<OrderItem>("OrderItem bulunamadı.");
 
-        public List<OrderItem> GetByOrderId(int orderId)
-        {
-            return _oItemDal.GetAll(a => a.OrderId == orderId);
-        }
-
-        public List<OrderItem> GetByProductId(int productId)
-        {
-            return _oItemDal.GetAll(a=>a.ProductId==productId);
-        }
-
-        public void Update(OrderItem order)
-        {
-            _oItemDal.Update(order);
+            return new SuccessDataResult<OrderItem>(item);
         }
     }
 }

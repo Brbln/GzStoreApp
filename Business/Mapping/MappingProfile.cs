@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Business.DTOs;
 using Business.DTOs.CartDTOs;
+using Business.DTOs.OrderDTOs;
 using Business.DTOs.ProductDTOs;
 using Business.DTOs.userDto;
 using Entities.Concrete;
@@ -23,10 +24,14 @@ namespace Business.Mapping
             CreateMap<Product, ProductDto>();
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductUpdateDto, Product>();
-            CreateMap<Order, OrderDto>().ReverseMap();
-            CreateMap<OrderItem, OrderItemDto>()
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.PName))
-                .ReverseMap();
+            CreateMap<OrderItem, OrderItemDto>().ReverseMap();
+            CreateMap<Order, OrderDto>()
+                .ForMember(d => d.OrderId, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.OrderDate, o => o.MapFrom(s => s.OrderTime))
+                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()))
+                .ForMember(d => d.Items, o => o.MapFrom(s => s.OrderItems));
+            CreateMap<Order, OrderDetailDto>()
+                .ForMember(d => d.Items, o => o.MapFrom(s => s.OrderItems));
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<User, UserCreateDto>().ReverseMap();
             CreateMap<User, UserUpdateDto>().ReverseMap();

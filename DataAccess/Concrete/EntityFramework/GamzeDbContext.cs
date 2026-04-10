@@ -60,10 +60,15 @@ namespace DataAccess.Concrete.EntityFramework
                 .WithMany(o => o.OrderItems)
                 .HasForeignKey(oi => oi.OrderId);
 
+            modelBuilder.Entity<Order>()
+                .Property(o => o.Status)
+                .HasConversion<string>()
+                .HasMaxLength(25);
+
             modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
             modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
             modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
-            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted); 
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
 
             base.OnModelCreating(modelBuilder);
         }
@@ -82,6 +87,6 @@ namespace DataAccess.Concrete.EntityFramework
             Set<TEntity>().Update(entity);
             SaveChanges();
         }
-      
+
     }
 }
