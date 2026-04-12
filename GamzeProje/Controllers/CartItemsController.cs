@@ -16,61 +16,75 @@ namespace WebAPI.Controllers
     {
         private readonly ICartItemService _cartItemService;
         private readonly ICartService _cartService;
+        private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
-        public CartItemsController(ICartItemService cartItemService,ICartService cartService, IMapper mapper)
+        public CartItemsController(
+            ICartItemService cartItemService,
+            ICartService cartService,
+            IProductService productService,
+            IMapper mapper)
         {
             _cartItemService = cartItemService;
             _cartService = cartService;
+            _productService = productService;
             _mapper = mapper;
         }
-         
+
         [HttpGet]
         public IActionResult GetCartItems()
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             var cartResult = _cartService.GetByUserId(userId);
-            if (!cartResult.Success)
-                return NotFound(cartResult.Message);
+            if (!cartResult.Success || cartResult.Data == null)
+                return NotFound("Sepet bulunamadı");
 
             var itemsResult = _cartItemService.GetCartItemsDto(cartResult.Data.Id);
+
             if (!itemsResult.Success)
                 return BadRequest(itemsResult.Message);
 
-            var cartDto = new CartDto
+            return Ok(new CartDto
             {
                 CartId = cartResult.Data.Id,
                 Items = itemsResult.Data
-            };
-
-            return Ok(cartDto);
+            });
         }
-         
-        [HttpPost]
-        public IActionResult Add([FromBody] AddCartItemDto addDto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
+        [HttpPost]
+        public IActionResult Add([FromBody] AddCartItemDto dto)
+        {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+            if (dto.Quantity <= 0)
+                return BadRequest("Miktar 0'dan büyük olmalıdır.");
+
             var cartResult = _cartService.GetByUserId(userId);
-            if (!cartResult.Success)
-                return NotFound(cartResult.Message);
+            if (!cartResult.Success || cartResult.Data == null)
+                return NotFound("Sepet bulunamadı");
 
             var cart = cartResult.Data;
 
-            var existingItemResult =
-                _cartItemService.GetByCartAndProduct(cart.Id, addDto.ProductId);
+            var productResult = _productService.GetById(dto.ProductId);
+            if (!productResult.Success || productResult.Data == null)
+                return NotFound("Ürün bulunamadı");
 
-            var existingItem = existingItemResult.Success
-                ? existingItemResult.Data
-                : null;
+            var product = productResult.Data;
+
+            var existingItemResult =
+                _cartItemService.GetByCartAndProduct(cart.Id, dto.ProductId);
+
+            var existingItem = existingItemResult.Success ? existingItemResult.Data : null;
+
+            var totalQuantity = dto.Quantity + (existingItem?.Quantity ?? 0);
+
+            if (product.PStock < totalQuantity)
+                return BadRequest("Yeterli stok yok");
 
             if (existingItem != null)
             {
-                existingItem.Quantity += addDto.Quantity;
+                existingItem.Quantity += dto.Quantity;
 
                 var updateResult = _cartItemService.Update(existingItem);
                 if (!updateResult.Success)
@@ -78,30 +92,31 @@ namespace WebAPI.Controllers
             }
             else
             {
-                var cartItem = _mapper.Map<CartItem>(addDto);
-                cartItem.CartId = cart.Id;
+                var newItem = _mapper.Map<CartItem>(dto);
+                newItem.CartId = cart.Id;
 
-                var addResult = _cartItemService.Add(cartItem);
+                var addResult = _cartItemService.Add(newItem);
                 if (!addResult.Success)
                     return BadRequest(addResult.Message);
             }
 
             return Ok("Ürün sepete eklendi.");
         }
+
         [HttpPut("update")]
-        public IActionResult UpdateCartItem([FromBody] AddCartDto dto)
+        public IActionResult Update([FromBody] AddCartItemDto dto)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             var cartResult = _cartService.GetByUserId(userId);
-            if (!cartResult.Success)
-                return NotFound(cartResult.Message);
+            if (!cartResult.Success || cartResult.Data == null)
+                return NotFound("Sepet bulunamadı");
 
             var itemResult =
                 _cartItemService.GetByCartAndProduct(cartResult.Data.Id, dto.ProductId);
 
             if (!itemResult.Success || itemResult.Data == null)
-                return NotFound("Sepette ürün bulunamadı.");
+                return NotFound("Ürün bulunamadı");
 
             var item = itemResult.Data;
             item.Quantity = dto.Quantity;
@@ -111,36 +126,32 @@ namespace WebAPI.Controllers
             if (!updateResult.Success)
                 return BadRequest(updateResult.Message);
 
-            return Ok(updateResult.Message);
+            return Ok("Güncellendi");
         }
 
-
-        [HttpDelete("{cartItemId}")]
-        public IActionResult Delete(int cartItemId)
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             var cartResult = _cartService.GetByUserId(userId);
-            if (!cartResult.Success)
-                return NotFound(cartResult.Message);
+            if (!cartResult.Success || cartResult.Data == null)
+                return NotFound("Sepet bulunamadı");
 
-            var cart = cartResult.Data;
+            var itemResult = _cartItemService.GetById(id);
 
-            var itemResult = _cartItemService.GetById(cartItemId);
             if (!itemResult.Success || itemResult.Data == null)
-                return NotFound(itemResult.Message);
+                return NotFound("Ürün bulunamadı");
 
-            var cartItem = itemResult.Data;
+            if (itemResult.Data.CartId != cartResult.Data.Id)
+                return Forbid();
 
-            if (cartItem.CartId != cart.Id)
-                return Forbid("Bu ürünü silme yetkiniz yok.");
-
-            var deleteResult = _cartItemService.Delete(cartItemId);
+            var deleteResult = _cartItemService.Delete(id);
 
             if (!deleteResult.Success)
                 return BadRequest(deleteResult.Message);
 
-            return Ok(deleteResult.Message);
+            return Ok("Silindi");
         }
     }
 }

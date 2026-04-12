@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Business.Concrete
 {
@@ -67,57 +68,64 @@ namespace Business.Concrete
         }
         public IResult CreateOrderFromCart(int userId)
         {
-            var cart = _cartDal.Get(c => c.UserId == userId);
-
-            if (cart == null)
-                return new ErrorResult("Sepet bulunamadı");
-
-            var cartItems = _cartItemDal.GetAll(c => c.CartId == cart.Id);
-
-            if (cartItems == null || cartItems.Count == 0)
-                return new ErrorResult("Sepet boş");
-             
-            var order = new Order
+            using (var scope = new TransactionScope())
             {
-                UserId = userId,
-                OrderTime = DateTime.Now,
-                Status = OrderStatus.Pending
-            };
+                var cart = _cartDal.Get(c => c.UserId == userId);
 
-            _orderDal.Add(order);
+                if (cart == null)
+                    return new ErrorResult("Sepet bulunamadı");
 
-            decimal total = 0;
-             
-            foreach (var item in cartItems)
-            {
-                var product = _productDal.Get(p => p.Id == item.ProductId);
+                var cartItems = _cartItemDal.GetAll(c => c.CartId == cart.Id);
 
-                if (product == null)
-                    return new ErrorResult($"Ürün bulunamadı (ProductId: {item.ProductId})");
+                if (cartItems == null || cartItems.Count == 0)
+                    return new ErrorResult("Sepet boş");
 
-                var orderItem = new OrderItem
+                var order = new Order
                 {
-                    OrderId = order.Id,
-                    ProductId = product.Id,                     
-                    ProductName = product.PName,
-                    UnitPrice = product.PPrice,
-                    Quantity = item.Quantity
+                    UserId = userId,
+                    OrderTime = DateTime.Now,
+                    Status = OrderStatus.Pending
                 };
 
-                _orderItemDal.Add(orderItem);
+                _orderDal.Add(order);
 
-                total += orderItem.UnitPrice * orderItem.Quantity;
-            }
-             
-            order.SetTotal(total);
-            _orderDal.Update(order);
-             
-            foreach (var item in cartItems)
-            {
-                _cartItemDal.Delete(item);
-            }
+                decimal total = 0;
 
-            return new SuccessResult("Sipariş başarıyla oluşturuldu");
+                foreach (var item in cartItems)
+                {
+                    var product = _productDal.Get(p => p.Id == item.ProductId);
+
+                    if (product == null)
+                        return new ErrorResult($"Ürün bulunamadı (ProductId: {item.ProductId})");
+
+                    if (product.PStock < item.Quantity)
+                        return new ErrorResult($"Yeterli stok yok: {product.PName}");
+
+                    var orderItem = new OrderItem
+                    {
+                        OrderId = order.Id,
+                        ProductId = product.Id,
+                        ProductName = product.PName,
+                        UnitPrice = product.PPrice,
+                        Quantity = item.Quantity
+                    };
+
+                    _orderItemDal.Add(orderItem);
+                    product.PStock -= item.Quantity;
+                    _productDal.Update(product);
+                    total += orderItem.UnitPrice * orderItem.Quantity;
+                }
+
+                order.SetTotal(total);
+                _orderDal.Update(order);
+
+                foreach (var item in cartItems)
+                {
+                    _cartItemDal.Delete(item);
+                }
+                scope.Complete();
+                return new SuccessResult("Sipariş başarıyla oluşturuldu");
+            }
         }
     }
 }
