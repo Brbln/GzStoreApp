@@ -1,4 +1,6 @@
-﻿using Entities.Concrete;
+﻿using Business.DTOs.ImageDTOs;
+using Core.Utilities.Results;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +11,11 @@ namespace Business.Abstract
 {
     public interface IPImageService
     {
-        void Add(PImage pImg);
-        void Update(PImage pImg);
-        void Delete(PImage pImg);
-        List<PImage> GetByProductId(int productId);
-        List<PImage> GetAll();
+        IResult Add(AddImgDto pImg);
+        IResult Update(UpdImgDto pImg);
+        IResult Delete(int id);
+        IDataResult<PImageDto> GetById(int id);
+        IDataResult<List<PImageDto>> GetByProductId(int productId);
+        IDataResult<List<PImageDto>> GetAll();
     }
 }

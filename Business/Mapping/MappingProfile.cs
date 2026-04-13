@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Business.DTOs;
 using Business.DTOs.CartDTOs;
+using Business.DTOs.ImageDTOs;
 using Business.DTOs.OrderDTOs;
 using Business.DTOs.ProductDTOs;
 using Business.DTOs.userDto;
@@ -36,6 +37,8 @@ namespace Business.Mapping
             CreateMap<User, UserCreateDto>().ReverseMap();
             CreateMap<User, UserUpdateDto>().ReverseMap();
             CreateMap<PImage, PImageDto>().ReverseMap();
+            CreateMap<PImage, AddImgDto>().ReverseMap();
+            CreateMap<PImage, UpdImgDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Category, CatCreateDto>().ReverseMap();
             CreateMap<CartItem, CartItemDto>()

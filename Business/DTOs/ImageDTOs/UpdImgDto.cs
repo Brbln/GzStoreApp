@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.DTOs
+namespace Business.DTOs.ImageDTOs
 {
-    public class PImageDto
+    public class UpdImgDto
     {
-        public int ImageId { get; set; }
+        public int Id { get; set; }
         public string ImageUrl { get; set; }
-
     }
 }

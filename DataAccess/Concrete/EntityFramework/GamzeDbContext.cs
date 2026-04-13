@@ -65,6 +65,12 @@ namespace DataAccess.Concrete.EntityFramework
                 .HasConversion<string>()
                 .HasMaxLength(25);
 
+            modelBuilder.Entity<PImage>()
+                .HasOne(i => i.Product)
+                .WithMany(p => p.Images)
+                .HasForeignKey(i => i.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
             modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
             modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);

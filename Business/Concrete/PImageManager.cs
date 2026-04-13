@@ -1,4 +1,7 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
+using Business.DTOs.ImageDTOs;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
@@ -12,56 +15,88 @@ namespace Business.Concrete
     public class PImageManager : IPImageService
     {
         private readonly IPImageDal _pImageDal;
+        private readonly IMapper _mapper;
+        private readonly IProductDal _productDal;
 
-        public PImageManager(IPImageDal pImageDal)
+        public PImageManager(IPImageDal pImageDal,IMapper mapper, IProductDal productDal)
         {
             _pImageDal = pImageDal;
+            _mapper =mapper;
+            _productDal = productDal;
         }
 
-        public void Add(PImage pImg)
+        public IResult Add(AddImgDto dto)
         {
-            if (pImg == null || string.IsNullOrEmpty(pImg.ImageUrl))
-            {
-                throw new ArgumentException("Resim URL'si boş olamaz ve geçerli bir resim sağlanmalıdır.");
-            }
+            var product = _productDal.Get(p => p.Id == dto.ProductId);
+            if (product == null)
+                return new ErrorResult("Böyle bir ürün bulunamadı.");
+            var imgCount=_pImageDal.GetAll(x=>x.ProductId==dto.ProductId).Count;
+            if (imgCount >= 5)
+                return new ErrorResult("En fazla 5 resim eklenebilir.");
 
-            pImg.CreatedDate = DateTime.Now; // Resmin oluşturulma tarihini belirleyin
-            _pImageDal.Add(pImg); // Veri erişim katmanına ekleme işlemi gönderiliyor
+            var entity = _mapper.Map<PImage>(dto);
+
+            entity.CreatedDate = DateTime.Now;
+
+            _pImageDal.Add(entity);
+
+            return new SuccessResult("Resim eklendi.");
         }
 
-        public void Delete(PImage pImg)
+        public IResult Update(UpdImgDto dto)
         {
-            if (pImg == null || pImg.Id <= 0)
-            {
-                throw new ArgumentException("Silinecek geçerli bir resim belirtiniz.");
-            }
+            var image = _pImageDal.Get(x => x.Id == dto.Id);
 
-            _pImageDal.Delete(pImg); // Veri erişim katmanında silme işlemi
+            if (image == null)
+                return new ErrorResult("Resim bulunamadı.");
+
+            image.ImageUrl = dto.ImageUrl;
+
+            _pImageDal.Update(image);
+
+            return new SuccessResult("Resim güncellendi.");
         }
 
-        public List<PImage> GetAll()
+        public IResult Delete(int id)
         {
-            return _pImageDal.GetAll(); // Veri erişim katmanından tüm resimleri getir
+            var image = _pImageDal.Get(x => x.Id == id);
+
+            if (image == null)
+                return new ErrorResult("Resim bulunamadı.");
+
+            _pImageDal.Delete(image);
+
+            return new SuccessResult("Resim silindi.");
         }
 
-        public List<PImage> GetByProductId(int productId)
+        public IDataResult<PImageDto> GetById(int id)
         {
-            if (productId <= 0)
-            {
-                throw new ArgumentException("Geçerli bir ürün ID'si giriniz.");
-            }
+            var image = _pImageDal.Get(x => x.Id == id);
 
-            return _pImageDal.GetAll(p => p.ProductId == productId); // Belirli ürüne ait resimler
+            if (image == null)
+                return new ErrorDataResult<PImageDto>("Resim bulunamadı.");
+
+            var dto = _mapper.Map<PImageDto>(image);
+
+            return new SuccessDataResult<PImageDto>(dto);
         }
 
-        public void Update(PImage pImg)
+        public IDataResult<List<PImageDto>> GetByProductId(int productId)
         {
-            if (pImg == null || pImg.Id <= 0)
-            {
-                throw new ArgumentException("Güncellenecek geçerli bir resim belirtiniz.");
-            }
+            var images = _pImageDal.GetAll(x => x.ProductId == productId);
 
-            _pImageDal.Update(pImg); // Veri erişim katmanında güncelleme işlemi
+            var dto = _mapper.Map<List<PImageDto>>(images);
+
+            return new SuccessDataResult<List<PImageDto>>(dto);
+        }
+
+        public IDataResult<List<PImageDto>> GetAll()
+        {
+            var images = _pImageDal.GetAll();
+
+            var dto = _mapper.Map<List<PImageDto>>(images);
+
+            return new SuccessDataResult<List<PImageDto>>(dto);
         }
     }
 }
