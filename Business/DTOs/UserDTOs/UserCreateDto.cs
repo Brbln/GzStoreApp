@@ -18,8 +18,8 @@ namespace Business.DTOs.userDto
         public string Email { get; set; }
         [Required]
         [Phone]
-        public string PhoneNo { get; set; }
+        public string? PhoneNo { get; set; }
         [Required]
-        public string Address { get; set; }
+        public string? Address { get; set; }
     }
 }

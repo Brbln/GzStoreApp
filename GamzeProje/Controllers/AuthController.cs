@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.DTOs;
+using Business.DTOs.userDto;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -51,6 +52,17 @@ namespace GamzeProje.Controllers
             );
 
             return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+        }
+        [HttpPost("register")]
+        public IActionResult AddUser([FromBody] UserCreateDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = _userService.Add(dto);
+            if (!result.Success) return Conflict(result.Message);
+
+            return Ok(result.Message);
         }
     }
 }

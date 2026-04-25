@@ -59,18 +59,7 @@ namespace GamzeProje.Controllers
             return Ok(dto);
         }
 
-        [HttpPost]
-        public IActionResult AddUser([FromBody] UserCreateDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = _userService.Add(dto);
-            if (!result.Success) return Conflict(result.Message);
-
-            return Ok(result.Message);
-        }
-
+        
         [HttpPut]
         public IActionResult UpdateUser([FromBody] UserUpdateDto dto)
         {
