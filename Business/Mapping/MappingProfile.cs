@@ -44,6 +44,8 @@ namespace Business.Mapping
             CreateMap<CartItem, CartItemDto>()
                 .ForMember(dest => dest.CartItemId,
                  opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.ProductId,   
+                 opt => opt.MapFrom(src => src.ProductId))
                 .ForMember(dest => dest.ProductName,
                  opt => opt.MapFrom(src => src.Product.PName))
                 .ForMember(dest => dest.UnitPrice,
