@@ -59,7 +59,8 @@ namespace Business.Concrete
         }
         public IDataResult<List<Order>> GetAll()
         {
-            return new SuccessDataResult<List<Order>>(_orderDal.GetAll());
+            var orders = _orderDal.GetOrdersWithItems();
+            return new SuccessDataResult<List<Order>>(orders);
         }
         public IDataResult<List<Order>> GetByUserId(int userId)
         {

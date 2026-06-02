@@ -93,9 +93,13 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
-
-builder.Services.AddControllers()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<UserCreateDtoValidator>());
+builder.Services.AddControllers().AddFluentValidation(fv =>
+        fv.RegisterValidatorsFromAssemblyContaining<UserCreateDtoValidator>())
+    .AddJsonOptions(opts =>
+    {
+        opts.JsonSerializerOptions.Converters
+            .Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
 builder.Services.AddCors(options =>
 {

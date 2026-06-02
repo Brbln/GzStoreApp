@@ -25,7 +25,8 @@ namespace Business.Mapping
             CreateMap<Product, ProductDto>();
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductUpdateDto, Product>();
-            CreateMap<OrderItem, OrderItemDto>().ReverseMap();
+            CreateMap<OrderItem, OrderItemDto>()
+                .ForMember(d => d.OrderItemId, o => o.MapFrom(s => s.Id));
             CreateMap<Order, OrderDto>()
                 .ForMember(d => d.OrderId, o => o.MapFrom(s => s.Id))
                 .ForMember(d => d.OrderDate, o => o.MapFrom(s => s.OrderTime))
@@ -44,7 +45,7 @@ namespace Business.Mapping
             CreateMap<CartItem, CartItemDto>()
                 .ForMember(dest => dest.CartItemId,
                  opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.ProductId,   
+                .ForMember(dest => dest.ProductId,
                  opt => opt.MapFrom(src => src.ProductId))
                 .ForMember(dest => dest.ProductName,
                  opt => opt.MapFrom(src => src.Product.PName))
