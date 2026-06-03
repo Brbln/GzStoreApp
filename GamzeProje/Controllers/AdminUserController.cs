@@ -30,7 +30,7 @@ namespace GamzeProje.Controllers
             return Ok(dtos);
         }
 
-        [HttpGet("users/{id}")] 
+        [HttpGet("users/{id:int}")] 
         public IActionResult GetUserById(int id)
         {
             var user = _userService.GetById(id);

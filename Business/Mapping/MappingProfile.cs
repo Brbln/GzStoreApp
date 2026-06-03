@@ -22,7 +22,8 @@ namespace Business.Mapping
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.Product, opt => opt.Ignore())
                 .ForMember(dest => dest.Cart, opt => opt.Ignore());
-            CreateMap<Product, ProductDto>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(p => p.ProductId, o => o.MapFrom(s => s.Id));
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductUpdateDto, Product>();
             CreateMap<OrderItem, OrderItemDto>()
@@ -34,13 +35,23 @@ namespace Business.Mapping
                 .ForMember(d => d.Items, o => o.MapFrom(s => s.OrderItems));
             CreateMap<Order, OrderDetailDto>()
                 .ForMember(d => d.Items, o => o.MapFrom(s => s.OrderItems));
-            CreateMap<User, UserDto>().ReverseMap();
-            CreateMap<User, UserCreateDto>().ReverseMap();
-            CreateMap<User, UserUpdateDto>().ReverseMap();
+            CreateMap<User, UserUpdateDto>()
+                .ForMember(a => a.UserId, o => o.MapFrom(s => s.Id));
+            CreateMap<UserUpdateDto, User>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.UserId));
+            CreateMap<User, UserDto>()
+               .ForMember(a => a.UserId, o => o.MapFrom(s => s.Id));
+            CreateMap<UserDto, User>()
+                .ForMember(d => d.Id, o => o.MapFrom(s => s.UserId));
+            CreateMap<User, UserCreateDto>().ReverseMap(); 
             CreateMap<PImage, PImageDto>().ReverseMap();
             CreateMap<PImage, AddImgDto>().ReverseMap();
             CreateMap<PImage, UpdImgDto>().ReverseMap();
-            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Category, CategoryDto>()
+                .ForMember(d => d.CategoryId, o => o.MapFrom(s => s.Id))
+                .ForMember(d => d.Products, o => o.Ignore());
+            CreateMap<CategoryDto, Category>()
+                .ForMember(d => d.Id, o => o.MapFrom(a => a.CategoryId));
             CreateMap<Category, CatCreateDto>().ReverseMap();
             CreateMap<CartItem, CartItemDto>()
                 .ForMember(dest => dest.CartItemId,
@@ -54,7 +65,9 @@ namespace Business.Mapping
                 .ForMember(dest => dest.Quantity,
                 opt => opt.MapFrom(src => src.Quantity))
                 .ForMember(dest => dest.TotalPrice,
-                opt => opt.MapFrom(src => src.Quantity * src.Product.PPrice));
+                opt => opt.MapFrom(src => src.Quantity * src.Product.PPrice))
+                .ForMember(dest => dest.Stock,
+                opt => opt.MapFrom(s => s.Product.PStock));
             CreateMap<Cart, CartDto>().ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.CartItems)).ReverseMap();
         }
     }

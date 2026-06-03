@@ -9,9 +9,9 @@ namespace Entities.Enums
     public enum OrderStatus
     {
         Pending,     // Sipariş alındı
-        Paid,        // Ödeme yapıldı
+        Processing,        // Hazırlanıyor
         Shipped,     // Kargoya verildi
-        Completed,   // Tamamlandı
+        Delivered,   // Teslim edildi
         Cancelled    // İptal edildi
     }
 }

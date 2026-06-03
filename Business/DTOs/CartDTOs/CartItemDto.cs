@@ -14,5 +14,6 @@ namespace Business.DTOs.CartDTOs
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
         public decimal TotalPrice => UnitPrice * Quantity;
+        public int Stock { get; set; }
     }
 }
