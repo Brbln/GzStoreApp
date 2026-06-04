@@ -114,15 +114,20 @@ namespace WebAPI.Controllers
 
             var itemResult =
                 _cartItemService.GetByCartAndProduct(cartResult.Data.Id, dto.ProductId);
-
             if (!itemResult.Success || itemResult.Data == null)
+                return NotFound("Ürün sepette bulunamadı");
+             
+            var productResult = _productService.GetById(dto.ProductId);
+            if (!productResult.Success || productResult.Data == null)
                 return NotFound("Ürün bulunamadı");
+
+            if (dto.Quantity > productResult.Data.PStock)
+                return BadRequest("Yeterli stok yok");
 
             var item = itemResult.Data;
             item.Quantity = dto.Quantity;
 
             var updateResult = _cartItemService.Update(item);
-
             if (!updateResult.Success)
                 return BadRequest(updateResult.Message);
 

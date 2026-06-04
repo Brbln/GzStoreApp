@@ -50,7 +50,8 @@ namespace Business.Concrete
         }
         public IDataResult<Order> GetById(int id)
         {
-            var order = _orderDal.Get(o => o.Id == id);
+            var orders = _orderDal.GetOrdersWithItems(o=>o.Id== id);
+            var order = orders.FirstOrDefault();
 
             if (order == null)
                 return new ErrorDataResult<Order>("Order bulunamadı.");

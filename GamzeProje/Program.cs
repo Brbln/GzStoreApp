@@ -14,11 +14,7 @@ using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using System.Text;
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+  
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -93,7 +89,8 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
-builder.Services.AddControllers().AddFluentValidation(fv =>
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
         fv.RegisterValidatorsFromAssemblyContaining<UserCreateDtoValidator>())
     .AddJsonOptions(opts =>
     {
