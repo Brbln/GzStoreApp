@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11408.102 d18.0
+VisualStudioVersion = 18.2.11408.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamzeProje", "GamzeProje\GamzeProje.csproj", "{196A3D42-06F0-4A9E-9BD0-4F399C9A5E0A}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{D81A14DA-8596-4206-99BB-D4D0E5BF5E59}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{E0ADB147-E399-4FFB-96A6-51DBD359E81F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{4A3DD21D-E10A-4A7D-82FA-61B5F79620B7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPTest", "GPTest\GPTest.csproj", "{75FAECC8-9E17-4E8F-9C8D-5ED52C690618}"
 EndProject
@@ -39,10 +37,6 @@ Global
 		{E0ADB147-E399-4FFB-96A6-51DBD359E81F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0ADB147-E399-4FFB-96A6-51DBD359E81F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0ADB147-E399-4FFB-96A6-51DBD359E81F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A3DD21D-E10A-4A7D-82FA-61B5F79620B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A3DD21D-E10A-4A7D-82FA-61B5F79620B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A3DD21D-E10A-4A7D-82FA-61B5F79620B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A3DD21D-E10A-4A7D-82FA-61B5F79620B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75FAECC8-9E17-4E8F-9C8D-5ED52C690618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75FAECC8-9E17-4E8F-9C8D-5ED52C690618}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75FAECC8-9E17-4E8F-9C8D-5ED52C690618}.Release|Any CPU.ActiveCfg = Release|Any CPU

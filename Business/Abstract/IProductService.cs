@@ -28,7 +28,6 @@ namespace Business.Abstract
         IDataResult<List<Product>> GetByProductName(string name);
         IDataResult<List<Product>> GetByStock(int minStock);
         IDataResult<List<Product>> GetByPriceRange(decimal minPrice, decimal maxPrice);
-         
-        IResult UpdateImages(int productId, List<string> images);
+          
     }
 }

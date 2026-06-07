@@ -107,32 +107,29 @@ namespace Business.Concrete
 
             return new SuccessResult("Ürün kalıcı olarak silindi.");
         }
-         
+
         public IDataResult<List<Product>> GetAll()
         {
-            var products = _productDal.GetAll();
+            var products = _productDal.GetAllWithImages(); 
             return new SuccessDataResult<List<Product>>(products);
         }
-         
+
         public IDataResult<List<Product>> GetAllForAdmin()
         {
             var products = _productDal.GetAllWithDeleted();
             return new SuccessDataResult<List<Product>>(products);
         }
-         
+
+
         public IDataResult<Product> GetById(int id)
         {
             if (id <= 0)
                 return new ErrorDataResult<Product>("Geçersiz ürün ID.");
-
-            var product = _productDal.Get(p => p.Id == id && !p.IsDeleted);
-
-            if (product == null)
+            var product = _productDal.GetByIdWithImages(id);
+            if (product == null || product.IsDeleted)
                 return new ErrorDataResult<Product>("Ürün bulunamadı.");
-
             return new SuccessDataResult<Product>(product);
         }
-         
         public IDataResult<Product> GetByIdForAdmin(int id)
         {
             if (id <= 0)
@@ -148,7 +145,8 @@ namespace Business.Concrete
          
         public IDataResult<List<Product>> GetCatById(int id)
         {
-            var products = _productDal.GetAll(p => p.CategoryId == id && !p.IsDeleted);
+            var products = _productDal.GetAllWithImages()
+                .Where(p => p.CategoryId == id && !p.IsDeleted).ToList();
             return new SuccessDataResult<List<Product>>(products);
         }
          
@@ -186,13 +184,8 @@ namespace Business.Concrete
                 !p.IsDeleted);
 
             return new SuccessDataResult<List<Product>>(products);
-        }
-         
-        public IResult UpdateImages(int productId, List<string> images)
-        {
-            return new ErrorResult("Henüz implemente edilmedi.");
-        }
-
+        }        
+        
         public IDataResult<List<Product>> GetDeletedProducts()
         { 
             var products = _productDal.GetDeletedProducts();

@@ -14,9 +14,9 @@ namespace GamzeProje.Controllers
         public PImageController(IPImageService imageService)
         {
             _imageService = imageService;
-        } 
+        }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("add")]
         public IActionResult Add([FromBody] AddImgDto dto)
         {
@@ -27,8 +27,8 @@ namespace GamzeProje.Controllers
 
             return Ok(result.Message);
         }
-         
-        //[Authorize(Roles = "Admin")]
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("update")]
         public IActionResult Update([FromBody] UpdImgDto dto)
         {
@@ -39,8 +39,8 @@ namespace GamzeProje.Controllers
 
             return Ok(result.Message);
         }
-         
-        //[Authorize(Roles = "Admin")]
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

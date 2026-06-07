@@ -23,7 +23,8 @@ namespace Business.Mapping
                 .ForMember(dest => dest.Product, opt => opt.Ignore())
                 .ForMember(dest => dest.Cart, opt => opt.Ignore());
             CreateMap<Product, ProductDto>()
-                .ForMember(p => p.ProductId, o => o.MapFrom(s => s.Id));
+                .ForMember(p => p.ProductId, o => o.MapFrom(s => s.Id))
+                .ForMember(p => p.Images, o => o.MapFrom(s => s.Images));
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductUpdateDto, Product>();
             CreateMap<OrderItem, OrderItemDto>()

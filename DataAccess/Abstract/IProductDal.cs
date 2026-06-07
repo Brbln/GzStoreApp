@@ -12,14 +12,15 @@ namespace DataAccess.Abstract
     {
         Product GetById(int id);
         Product GetByIdWithDeleted(int id);
+        Product GetByIdWithImages(int id);
         List<Product> GetAllWithDeleted();
+        List<Product> GetAllWithImages();
         List<Product> GetDeletedProducts();
         List<Product> GetCatById(int id);
         List<Product> GetByProductName(string name);
         List<Product> GetByStock(int minStock);
         List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice);
-        void HardDelete(Product product);   
-        void UpdateImages(int productId, List<string> images);
+        void HardDelete(Product product);    
         bool Any(Expression<Func<Product, bool>> filter);
 
     }

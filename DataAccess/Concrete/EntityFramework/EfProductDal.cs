@@ -27,6 +27,13 @@ namespace DataAccess.Concrete.EntityFramework
                           .IgnoreQueryFilters()
                           .FirstOrDefault(p => p.Id == id);
         }
+        public Product GetByIdWithImages(int id)
+        {
+            return _context.Products
+                .Include(p => p.Images)
+                .Include(p => p.Category)
+                .FirstOrDefault(p => p.Id == id);
+        }
 
         public List<Product> GetAllWithDeleted()
         {
@@ -34,7 +41,16 @@ namespace DataAccess.Concrete.EntityFramework
             return context.Products
                           .IgnoreQueryFilters()
                           .Include(p => p.Category)
-                          .ToList();}
+                          .ToList();
+        }
+        public List<Product> GetAllWithImages()
+        {
+            return _context.Products
+                .Include(p => p.Images)
+                .Include(p => p.Category)
+                .ToList();
+        }
+
         public List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice)
         {
             using var context = new GamzeDbContext();
@@ -81,27 +97,7 @@ namespace DataAccess.Concrete.EntityFramework
             context.Products.Attach(product);
             context.Products.Remove(product);
             context.SaveChanges();
-        }
-
-        public void UpdateImages(int productId, List<string> images)
-        {
-
-            //using var context = new GamzeDbContext();
-
-            //var product = context.Products
-            //                     .IgnoreQueryFilters()
-            //                     .FirstOrDefault(p => p.Id == productId);
-
-            //if (product == null)
-            //    throw new Exception("Ürün bulunamadı.");
-
-            //product.Images = images;
-            //product.UpdatedDate = DateTime.Now;
-
-            //context.Products.Update(product);
-            //context.SaveChanges();
-        }
-
+        } 
         public List<Product> GetDeletedProducts()
         {
             using var context = new GamzeDbContext();
