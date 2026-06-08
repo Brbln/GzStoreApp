@@ -15,5 +15,6 @@ namespace Business.DTOs.CartDTOs
         public int Quantity { get; set; }
         public decimal TotalPrice => UnitPrice * Quantity;
         public int Stock { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

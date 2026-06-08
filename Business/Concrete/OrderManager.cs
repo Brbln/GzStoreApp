@@ -95,7 +95,7 @@ namespace Business.Concrete
 
                 foreach (var item in cartItems)
                 {
-                    var product = _productDal.Get(p => p.Id == item.ProductId);
+                    var product = _productDal.GetByIdWithImages(item.ProductId);
 
                     if (product == null)
                         return new ErrorResult($"Ürün bulunamadı (ProductId: {item.ProductId})");
@@ -109,7 +109,8 @@ namespace Business.Concrete
                         ProductId = product.Id,
                         ProductName = product.PName,
                         UnitPrice = product.PPrice,
-                        Quantity = item.Quantity
+                        Quantity = item.Quantity,
+                        ImageUrl = product.Images?.FirstOrDefault()?.ImageUrl
                     };
 
                     _orderItemDal.Add(orderItem);

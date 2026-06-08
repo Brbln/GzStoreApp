@@ -19,14 +19,16 @@ namespace DataAccess.Concrete.EntityFramework
         public CartItem GetByCartAndProduct(int cartId, int productId)
         {
             return _context.CartItems
-                .Include(c=>c.Product).
-                FirstOrDefault(c => c.CartId == cartId && c.ProductId == productId);
+                .Include(c=>c.Product)
+                .ThenInclude(p => p.Images)
+                .FirstOrDefault(c => c.CartId == cartId && c.ProductId == productId);
         }
 
         public List<CartItem> GetByCartId(int cartId)
         {
             return _context.CartItems
                 .Include(c=>c.Product)
+                .ThenInclude(p => p.Images)
                 .Where(c => c.CartId == cartId).ToList();
         }
 
@@ -34,11 +36,13 @@ namespace DataAccess.Concrete.EntityFramework
         {
             return _context.CartItems
                 .Include(c=> c.Product)
+                .ThenInclude(p => p.Images)
                 .Where(c => c.ProductId == productId).ToList();
         }
         public List<CartItem> GetAllWithProduct(Expression<Func<CartItem, bool>> filter)
         {
-            return _context.CartItems.Include(c => c.Product).Where(filter).ToList();
+            return _context.CartItems.Include(c => c.Product)
+                .ThenInclude(p => p.Images).Where(filter).ToList();
         }
     }
 }

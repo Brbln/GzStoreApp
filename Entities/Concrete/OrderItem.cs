@@ -22,6 +22,7 @@ namespace Entities.Concrete
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
+        public string ImageUrl { get; set; }
 
         [NotMapped]
         public decimal TotalPrice => Quantity * UnitPrice;

@@ -55,20 +55,25 @@ namespace Business.Mapping
                 .ForMember(d => d.Id, o => o.MapFrom(a => a.CategoryId));
             CreateMap<Category, CatCreateDto>().ReverseMap();
             CreateMap<CartItem, CartItemDto>()
-                .ForMember(dest => dest.CartItemId,
-                 opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.ProductId,
-                 opt => opt.MapFrom(src => src.ProductId))
-                .ForMember(dest => dest.ProductName,
-                 opt => opt.MapFrom(src => src.Product.PName))
-                .ForMember(dest => dest.UnitPrice,
+            .ForMember(dest => dest.CartItemId,
+                opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.ProductId,
+                opt => opt.MapFrom(src => src.ProductId))
+            .ForMember(dest => dest.ProductName,
+                opt => opt.MapFrom(src => src.Product.PName))
+            .ForMember(dest => dest.UnitPrice,
                 opt => opt.MapFrom(src => src.Product.PPrice))
-                .ForMember(dest => dest.Quantity,
+            .ForMember(dest => dest.Quantity,
                 opt => opt.MapFrom(src => src.Quantity))
-                .ForMember(dest => dest.TotalPrice,
+            .ForMember(dest => dest.TotalPrice,
                 opt => opt.MapFrom(src => src.Quantity * src.Product.PPrice))
-                .ForMember(dest => dest.Stock,
-                opt => opt.MapFrom(s => s.Product.PStock));
+            .ForMember(dest => dest.Stock,
+                opt => opt.MapFrom(src => src.Product.PStock))
+            .ForMember(dest => dest.ImageUrl,
+                opt => opt.MapFrom(src =>
+                src.Product.Images != null && src.Product.Images.Any()
+                ? src.Product.Images.First().ImageUrl
+                : null));
             CreateMap<Cart, CartDto>().ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.CartItems)).ReverseMap();
         }
     }
