@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.DTOs;
 using Business.DTOs.userDto;
+using Business.DTOs.UserDTOs;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -63,6 +64,19 @@ namespace GamzeProje.Controllers
             if (!result.Success) return Conflict(result.Message);
 
             return Ok(result.Message);
+        }
+        [HttpPost("forgot-password")]
+        public IActionResult ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            var result = _userService.ForgotPassword(dto);
+            return Ok(result.Message);
+        }
+
+        [HttpPost("reset-password")]
+        public IActionResult ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var result = _userService.ResetPassword(dto);
+            return result.Success ? Ok(result.Message) : BadRequest(result.Message);
         }
     }
 }

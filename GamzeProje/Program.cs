@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using System.Text;
+
+
 var builder = WebApplication.CreateBuilder(args);
   
 builder.Services.AddEndpointsApiExplorer();
@@ -20,7 +22,8 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "GamzeProje API", Version = "v1" });
 
-    // JWT Auth
+    // JWT AuthSystem.IO.InvalidDataException: 'Failed to load configuration from file 'C:\Users\pablo\source\repos\GamzeProje\GamzeProje\appsettings.json'.'
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -58,6 +61,7 @@ builder.Services.AddScoped<IPaymentDal, EfPaymentDal>();
 builder.Services.AddScoped<IPImageDal, EfPImageDal>();
 
 // Business
+builder.Services.AddScoped<IEmailService, EmailManager>();
 builder.Services.AddScoped<IProductService, ProductManager>();
 builder.Services.AddScoped<ICartItemService, CartItemManager>();
 builder.Services.AddScoped<ICartService, CartManager>();

@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.DTOs.userDto;
+using Business.DTOs.UserDTOs;
 using Core.Extensions;
 using Core.Utilities.Results;
 using Core.Utilities.Security;
@@ -11,11 +12,13 @@ public class UserManager : IUserService
 {
     private readonly IUserDal _userDal;
     private readonly ICartDal _cartDal;
+    private readonly IEmailService _emailService;
 
-    public UserManager(IUserDal userDal, ICartDal cartDal)
+    public UserManager(IUserDal userDal, ICartDal cartDal, IEmailService emailService)
     {
         _userDal = userDal;
         _cartDal = cartDal;
+        _emailService = emailService;
     }
 
     public IResult Add(UserCreateDto dto)
@@ -155,5 +158,40 @@ public class UserManager : IUserService
         using var sha256 = System.Security.Cryptography.SHA256.Create();
         var hashed = Convert.ToBase64String(sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)));
         return hashed == passwordHash;
+    }
+    public IResult ForgotPassword(ForgotPasswordDto dto)
+    {
+        var user = _userDal.Get(u => u.Email == dto.Email.Trim().ToLowerInvariant());
+         
+        if (user == null)
+            return new SuccessResult("Eğer bu email kayıtlıysa, sıfırlama kodu gönderildi.");
+         
+        var code = new Random().Next(100000, 999999).ToString();
+
+        user.PasswordResetCode = code;
+        user.PasswordResetExpiry = DateTime.Now.AddMinutes(15);
+        _userDal.Update(user);
+
+        _emailService.SendPasswordResetEmail(user.Email, code);
+
+        return new SuccessResult("Eğer bu email kayıtlıysa, sıfırlama kodu gönderildi.");
+    }
+
+    public IResult ResetPassword(ResetPasswordDto dto)
+    {
+        var user = _userDal.Get(u => u.Email == dto.Email.Trim().ToLowerInvariant());
+
+        if (user == null || user.PasswordResetCode != dto.Code)
+            return new ErrorResult("Geçersiz kod veya e-posta.");
+
+        if (user.PasswordResetExpiry == null || user.PasswordResetExpiry < DateTime.Now)
+            return new ErrorResult("Kodun süresi dolmuş. Lütfen yeni kod isteyin.");
+
+        user.PasswordHash = HashHelper.Hash(dto.NewPassword);
+        user.PasswordResetCode = null;
+        user.PasswordResetExpiry = null;
+        _userDal.Update(user);
+
+        return new SuccessResult("Şifreniz başarıyla sıfırlandı.");
     }
 }

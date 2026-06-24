@@ -1,4 +1,5 @@
 ﻿using Business.DTOs.userDto;
+using Business.DTOs.UserDTOs;
 using Core.Utilities.Results;
 using Entities.Concrete;
 using System;
@@ -23,5 +24,7 @@ namespace Business.Abstract
         bool IsEmailExists(string email);
         bool IsUNameExists(string username);
         IDataResult<User>? ValidateUser(string email, string password);
+        IResult ForgotPassword(ForgotPasswordDto dto);
+        IResult ResetPassword(ResetPasswordDto dto);
     }
 }

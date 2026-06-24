@@ -27,7 +27,9 @@ namespace Entities.Concrete
         public string? PhoneNo { get; set; }
 
         public Cart Cart { get; set; }
-        public UserRoles Role { get; set; } 
+        public UserRoles Role { get; set; }
+        public string? PasswordResetCode { get; set; }
+        public DateTime? PasswordResetExpiry { get; set; }
     }
 
 
