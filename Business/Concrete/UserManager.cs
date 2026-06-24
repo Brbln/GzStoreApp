@@ -112,10 +112,13 @@ public class UserManager : IUserService
 
         var lowUsname = dto.UserName.Trim().ToLowerInvariant();
         var normEmail = dto.Email.Trim().ToLowerInvariant();
-        if (existingUser.UserName != lowUsname && _userDal.IsUNameExists(lowUsname))
+         
+        var userWithSameName = _userDal.Get(u => u.UserName.ToLower() == lowUsname);
+        if (userWithSameName != null && userWithSameName.Id != dto.UserId)
             return new ErrorResult("Bu kullanıcı adı başka bir kullanıcı tarafından kullanılıyor.");
 
-        if (existingUser.Email != normEmail && _userDal.IsEmailExists(normEmail))
+        var userWithSameEmail = _userDal.Get(u => u.Email.ToLower() == normEmail);
+        if (userWithSameEmail != null && userWithSameEmail.Id != dto.UserId)
             return new ErrorResult("Bu email başka bir kullanıcı tarafından kullanılıyor.");
 
         existingUser.UserName = lowUsname;
@@ -130,6 +133,7 @@ public class UserManager : IUserService
 
         _userDal.Update(existingUser);
         return new SuccessResult("Kullanıcı başarıyla güncellendi.");
+
     }
     public IDataResult<List<User>> GetDeletedUsers()
     {

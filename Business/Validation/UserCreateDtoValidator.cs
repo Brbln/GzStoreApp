@@ -13,8 +13,8 @@ namespace Business.Validation
         public UserCreateDtoValidator()
         {
             RuleFor(u => u.UserName)
-                .NotEmpty().WithMessage("Kullanıcı adı boş olamaz.")
-                .MinimumLength(3).WithMessage("Kullanıcı adı en az 3 karakter olmalı.");
+               .NotEmpty().WithMessage("Kullanıcı adı boş olamaz.")
+               .MinimumLength(3).WithMessage("Kullanıcı adı en az 3 karakter olmalı.");
 
             RuleFor(u => u.Email)
                 .NotEmpty().WithMessage("Email boş olamaz.")
@@ -22,7 +22,9 @@ namespace Business.Validation
 
             RuleFor(u => u.Password)
                 .NotEmpty().WithMessage("Şifre boş olamaz.")
-                .MinimumLength(6).WithMessage("Şifre en az 6 karakter olmalı.");
+                .MinimumLength(8).WithMessage("Şifre en az 8 karakter olmalı.")
+                .Matches("[A-Z]").WithMessage("Şifre en az bir büyük harf içermeli.") 
+                .Matches("[a-z]").WithMessage("Şifre en az bir küçük harf içermeli.");
         }
     }
 }
