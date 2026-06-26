@@ -33,5 +33,7 @@ namespace Entities.Concrete
         {
             TotalAmount = OrderItems.Sum(i => i.UnitPrice * i.Quantity);
         }
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.BankTransfer;
     }
 }

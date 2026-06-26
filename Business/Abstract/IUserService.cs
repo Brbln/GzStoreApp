@@ -24,7 +24,7 @@ namespace Business.Abstract
         bool IsEmailExists(string email);
         bool IsUNameExists(string username);
         IDataResult<User>? ValidateUser(string email, string password);
-        IResult ForgotPassword(ForgotPasswordDto dto);
+        Task<IResult> ForgotPassword(ForgotPasswordDto dto);
         IResult ResetPassword(ResetPasswordDto dto);
     }
 }

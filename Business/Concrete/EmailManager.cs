@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
+using System;
 
 namespace Business.Concrete
 {
@@ -25,7 +26,14 @@ namespace Business.Concrete
             var from = new EmailAddress(_fromEmail, _fromName);
             var to = new EmailAddress(toEmail);
             var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
-            await client.SendEmailAsync(msg);
+
+            var response = await client.SendEmailAsync(msg);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Body.ReadAsStringAsync();
+                throw new Exception($"Mail gönderilemedi. StatusCode: {response.StatusCode}, Detail: {errorBody}");
+            }
         }
 
         public async Task SendPasswordResetEmail(string toEmail, string resetCode)

@@ -8,6 +8,7 @@ using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 public class UserManager : IUserService
 {
     private readonly IUserDal _userDal;
@@ -155,24 +156,24 @@ public class UserManager : IUserService
     }
     private bool VerifyPassword(string password, string passwordHash)
     {
-        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        using var sha256 = SHA256.Create();
         var hashed = Convert.ToBase64String(sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password)));
         return hashed == passwordHash;
     }
-    public IResult ForgotPassword(ForgotPasswordDto dto)
+    public async Task<IResult> ForgotPassword(ForgotPasswordDto dto)
     {
         var user = _userDal.Get(u => u.Email == dto.Email.Trim().ToLowerInvariant());
          
         if (user == null)
             return new SuccessResult("Eğer bu email kayıtlıysa, sıfırlama kodu gönderildi.");
-         
-        var code = new Random().Next(100000, 999999).ToString();
+
+        var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
 
         user.PasswordResetCode = code;
         user.PasswordResetExpiry = DateTime.Now.AddMinutes(15);
         _userDal.Update(user);
 
-        _emailService.SendPasswordResetEmail(user.Email, code);
+        await _emailService.SendPasswordResetEmail(user.Email, code);
 
         return new SuccessResult("Eğer bu email kayıtlıysa, sıfırlama kodu gönderildi.");
     }

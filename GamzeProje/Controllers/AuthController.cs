@@ -66,10 +66,17 @@ namespace GamzeProje.Controllers
             return Ok(result.Message);
         }
         [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword([FromBody] ForgotPasswordDto dto)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
-            var result = _userService.ForgotPassword(dto);
-            return Ok(result.Message);
+            try
+            {
+                var result = await _userService.ForgotPassword(dto);
+                return Ok(result.Message);
+            }
+            catch
+            {
+                return StatusCode(500, "Şu anda mail gönderilemedi. Lütfen daha sonra tekrar deneyin.");
+            }
         }
 
         [HttpPost("reset-password")]
