@@ -27,7 +27,7 @@ namespace GamzeProje.Controllers
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             var result = _orderService.GetByUserId(userId);
-            
+
             if (!result.Success)
                 return BadRequest(result.Message);
 
@@ -93,11 +93,11 @@ namespace GamzeProje.Controllers
             return Ok(dto);
         }
         [HttpPost("checkout")]
-        public IActionResult CreateOrder()
+        public async Task<IActionResult> CreateOrder()
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            var result = _orderService.CreateOrderFromCart(userId);
+            var result = await _orderService.CreateOrderFromCart(userId);
 
             if (!result.Success)
                 return BadRequest(result.Message);
@@ -106,23 +106,46 @@ namespace GamzeProje.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}/status")]
-        public IActionResult UpdateStatus(int id, [FromBody] OrderStatus status)
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOrderStatusDto dto)
         {
-            var result = _orderService.GetById(id);
+            var result = await _orderService.UpdateStatusWithEmail(id, dto.Status, dto.TrackingNumber);
 
             if (!result.Success)
                 return NotFound(result.Message);
 
-            var order = result.Data;
+            return Ok(result.Message);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpGet("pending-payments")]
+        public IActionResult GetPendingPayments()
+        {
+            var result = _orderService.GetPendingPayments();
+            if (!result.Success) return BadRequest(result.Message);
+            var dto = _mapper.Map<List<OrderDto>>(result.Data);
+            return Ok(dto);
+        }
 
-            order.Status = status;
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}/confirm-payment")]
+        public async Task<IActionResult> ConfirmPayment(int id)
+        {
+            var result = await _orderService.ConfirmPayment(id);
+            if (!result.Success) return BadRequest(result.Message);
+            return Ok(result.Message);
+        }
 
-            var updateResult = _orderService.Update(order);
+        public class RejectPaymentDto
+        {
+            public string? Reason { get; set; }
+        }
 
-            if (!updateResult.Success)
-                return BadRequest(updateResult.Message);
-
-            return Ok("Sipariş durumu güncellendi.");
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}/reject-payment")]
+        public async Task<IActionResult> RejectPayment(int id, [FromBody] RejectPaymentDto dto)
+        {
+            var result = await _orderService.RejectPayment(id, dto?.Reason);
+            if (!result.Success) return BadRequest(result.Message);
+            return Ok(result.Message);
         }
     }
 }

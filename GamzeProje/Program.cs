@@ -47,7 +47,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddDbContext<GamzeDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        Environment.GetEnvironmentVariable("DATABASE_URL")
+        ?? builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // DataAccess
 builder.Services.AddScoped<IProductDal, EfProductDal>();
@@ -90,7 +92,10 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        Encoding.UTF8.GetBytes(
+        Environment.GetEnvironmentVariable("JWT_KEY")
+        ?? builder.Configuration["Jwt:Key"]
+        ?? throw new InvalidOperationException("JWT Key bulunamadı")))
     };
 });
 builder.Services.AddControllers()
@@ -116,8 +121,7 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
+ 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

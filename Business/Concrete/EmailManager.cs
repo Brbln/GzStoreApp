@@ -65,7 +65,7 @@ namespace Business.Concrete
             await SendEmail(toEmail, $"Siparişiniz Alındı - #{orderId}", html);
         }
 
-        public async Task SendOrderStatusEmail(string toEmail, int orderId, string newStatus)
+        public async Task SendOrderStatusEmail(string toEmail, int orderId, string newStatus, string? trackingNumber = null)
         {
             var statusText = newStatus switch
             {
@@ -76,13 +76,49 @@ namespace Business.Concrete
                 _ => newStatus
             };
 
+            var trackingHtml = !string.IsNullOrWhiteSpace(trackingNumber)
+        ? $@"<div style='background: #fef3c7; padding: 14px; border-radius: 8px; margin: 12px 0;'>
+                <p style='margin:0; font-size:13px; color:#92400e;'>Kargo Takip Numarası</p>
+                <p style='margin:4px 0 0; font-size:18px; font-weight:700; color:#3f2e24;'>{trackingNumber}</p>
+            </div>"
+        : "";
+
             var html = $@"
-                <div style='font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;'>
-                    <h2 style='color: #3f2e24;'>Sipariş Durumu Güncellendi</h2>
-                    <p>Sipariş #{orderId} durumu: <strong>{statusText}</strong></p>
-                </div>";
+        <div style='font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;'>
+            <h2 style='color: #3f2e24;'>Sipariş Durumu Güncellendi</h2>
+            <p>Sipariş #{orderId} durumu: <strong>{statusText}</strong></p>
+            {trackingHtml}
+        </div>";
 
             await SendEmail(toEmail, $"Sipariş Durumu - #{orderId}", html);
+        }
+        public async Task SendPaymentConfirmedEmail(string toEmail, int orderId)
+        {
+            var html = $@"
+        <div style='font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;'>
+            <h2 style='color: #16a34a;'>Ödemeniz Onaylandı ✓</h2>
+            <p>Sipariş #{orderId} için ödemeniz onaylandı.</p>
+            <p>Siparişiniz şimdi hazırlanmaya başlıyor.</p>
+        </div>";
+
+            await SendEmail(toEmail, $"Ödeme Onaylandı - #{orderId}", html);
+        }
+
+        public async Task SendPaymentRejectedEmail(string toEmail, int orderId, string? reason = null)
+        {
+            var reasonHtml = !string.IsNullOrWhiteSpace(reason)
+                ? $"<p style='color:#888; font-size:13px;'>Sebep: {reason}</p>"
+                : "";
+
+            var html = $@"
+        <div style='font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;'>
+            <h2 style='color: #dc2626;'>Ödeme Onaylanamadı</h2>
+            <p>Sipariş #{orderId} için ödemeniz onaylanamadı ve sipariş iptal edildi.</p>
+            {reasonHtml}
+            <p>Sorularınız için bize ulaşabilirsiniz.</p>
+        </div>";
+
+            await SendEmail(toEmail, $"Ödeme Sorunu - #{orderId}", html);
         }
     }
 }

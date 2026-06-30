@@ -14,5 +14,7 @@ namespace Business.DTOs.OrderDTOs
         public string Status { get; set; }
         public decimal TotalAmount { get; set; }
         public List<OrderItemDto> Items { get; set; } = new();
+        public string? TrackingNumber { get; set; }
+        public string PaymentStatus { get; set; }
     }
 }

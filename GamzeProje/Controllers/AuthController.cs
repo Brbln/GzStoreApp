@@ -36,17 +36,27 @@ namespace GamzeProje.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),      
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
+     ?? _configuration["Jwt:Key"]
+     ?? throw new InvalidOperationException("JWT Key bulunamadı");
+
+            var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
+                ?? _configuration["Jwt:Issuer"];
+
+            var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+                ?? _configuration["Jwt:Audience"];
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: jwtIssuer,
+                audience: jwtAudience,
                 claims: claims,
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds

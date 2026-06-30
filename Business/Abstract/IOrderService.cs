@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results;
 using Entities.Concrete;
+using Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,11 @@ namespace Business.Abstract
         IDataResult<List<Order>> GetAll();
         IDataResult<Order> GetById(int id);
         IDataResult<List<Order>> GetByUserId(int userId);
-        IResult CreateOrderFromCart(int userId);
+        Task<IResult> CreateOrderFromCart(int userId);
+        Task<IResult> UpdateStatusWithEmail(int orderId, OrderStatus newStatus, string? trackingNumber =null);
+        IDataResult<List<Order>> GetPendingPayments();
+        Task<IResult> ConfirmPayment(int orderId);
+        Task<IResult> RejectPayment(int orderId, string? reason = null);
 
     }
 }
