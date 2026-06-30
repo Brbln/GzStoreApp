@@ -28,6 +28,7 @@ namespace Business.Abstract
         IDataResult<List<Product>> GetByProductName(string name);
         IDataResult<List<Product>> GetByStock(int minStock);
         IDataResult<List<Product>> GetByPriceRange(decimal minPrice, decimal maxPrice);
-          
+        IDataResult<List<Product>> Filter(string? name, int? categoryId, decimal? minPrice, decimal? maxPrice);
+
     }
 }

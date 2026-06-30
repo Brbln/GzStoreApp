@@ -76,17 +76,16 @@ namespace GamzeProje.Controllers
             return Ok(dtos);
         }
 
-        //[HttpPut("update-images/{productId}")]
-        //public IActionResult UpdateImages(
-        //  int productId,
-        //  [FromBody] List<string> imageUrls)
-        //{
-        //    var result = _productService.UpdateImages(productId, imageUrls);
-
-        //    if (!result.Success)
-        //        return BadRequest(result.Message);
-
-        //    return Ok(result.Message);
-        //}
+        [HttpGet("filter")]
+        public IActionResult Filter(
+            [FromQuery] string? name,
+            [FromQuery] int? categoryId,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice)
+        {
+            var result = _productService.Filter(name, categoryId, minPrice, maxPrice);
+            var dtos = _mapper.Map<List<ProductDto>>(result.Data);
+            return Ok(dtos);
+        }
     }
 }

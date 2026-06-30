@@ -191,6 +191,26 @@ namespace Business.Concrete
             var products = _productDal.GetDeletedProducts();
             return new SuccessDataResult<List<Product>>(products);
         }
+        public IDataResult<List<Product>> Filter(string? name, int? categoryId, decimal? minPrice, decimal? maxPrice)
+        {
+            var products = _productDal.GetAllWithImages()
+                .Where(p => !p.IsDeleted)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+                products = products.Where(p => p.PName.ToLower().Contains(name.Trim().ToLower()));
+
+            if (categoryId.HasValue)
+                products = products.Where(p => p.CategoryId == categoryId.Value);
+
+            if (minPrice.HasValue)
+                products = products.Where(p => p.PPrice >= minPrice.Value);
+
+            if (maxPrice.HasValue)
+                products = products.Where(p => p.PPrice <= maxPrice.Value);
+
+            return new SuccessDataResult<List<Product>>(products.ToList());
+        }
     }
 }
 
